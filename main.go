@@ -13,6 +13,7 @@ func main() {
 	mux.Get("/admin/companies", getAdminCompanies)
 	mux.Get("/admin/company", getAdminCompany)
 	mux.Get("/admin/company/drivers", getAdminCompanyDrivers)
+	mux.Get("/admin/company/vehicles", getAdminCompanyVehicles)
 	mux.Get("/success", setMessage)
 	mux.Get("/hey/:name/you", getHey)
 	mux.Serve(":8080")

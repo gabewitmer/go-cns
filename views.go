@@ -59,6 +59,11 @@ func getAdminCompanyDrivers(w http.ResponseWriter, r *http.Request, c *web.Conte
 	return
 }
 
+func getAdminCompanyVehicles(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	ts.Render(w, "admin-company-vehicles.tmpl", tmpl.Model{})
+	return
+}
+
 func getHey(w http.ResponseWriter, r *http.Request, c *web.Context) {
 	yourMom := c.GetPathVar("name")
 	fmt.Fprintf(w, "%s is a loving mother", yourMom)
