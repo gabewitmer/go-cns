@@ -1,0 +1,26 @@
+<!-- navigation -->
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/">
+					Customer & Content Management System
+			</a>
+		</div>
+		<div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="/admin/company"><i class="fa fa-building-o"></i> Company</a></li>
+				<li><a href="/admin/driver"><i class="fa fa-male"></i> Driver</a></li>
+				<li><a href="/admin/vehicle"><i class="fa fa-truck"></i> Vehicle</a></li>
+				<li><a href="/admin/employee"><i class="fa fa-user"></i> Employee</a></li>
+				<li><a href="/logout"><i class="fa fa-sign-out"></i> Logout</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+<!-- navigation -->

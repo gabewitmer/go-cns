@@ -1,0 +1,194 @@
+/******************************
+	-- Style Overrides
+*******************************/
+html,body{
+	background-color: #efece8;
+}
+body, button, input, select, textarea {
+	color: #423931;
+	font-family: "Open Sans", Arial, Helvetica, sans-serif;
+}
+.navbar-default {
+	background-color: #f58220;
+	border-color: #f58220;
+	border-bottom: 10px solid #005978;
+}
+.navbar-default .navbar-brand,.navbar-default .navbar-nav>li>a {
+	color: #423931;
+}
+.navbar-default .navbar-brand:hover {
+	color: #005978;
+}
+.navbar-default .navbar-nav>li>a:hover {
+	background-color: #f5c400;
+	border-color: #f5c400;
+	color: #005978;
+}
+.btn {
+	border-radius: 1px;
+}
+.btn-primary {
+	color: #fff;
+	background-color: #005978;
+	border-color: #004867;
+}
+.btn-primary:hover{
+	background-color: #004867;
+}
+a {
+	color: #f58220;
+	text-decoration: none;
+}
+a:hover {
+	color: #da741c;
+}
+input.form-control {
+	border-radius: 1px;
+}
+textarea {
+	resize: none;
+}
+.panel {
+	border-radius: 1px;
+	-webkit-box-shadow: 0 4px 15px 0 rgba(50, 50, 50, 0.46);
+	-moz-box-shadow:    0 4px 15px 0 rgba(50, 50, 50, 0.46);
+	box-shadow:         0 4px 15px 0 rgba(50, 50, 50, 0.46);
+	padding: 10px 20px 10px 20px;
+	margin: 30px 0 30px 0;
+}
+h1,h2{
+	font-family: "Open Sans", Arial, Helvetica, sans-serif;
+	font-weight: 600;
+	text-transform: uppercase;
+	color: #005978;
+}
+p.lead{
+	color: #f58220;
+}
+
+/******************************
+	-- DataTable Link Override
+*******************************/
+.pagination>.active>a,
+.pagination>.active>a:focus,
+.pagination>.active>a:hover,
+.pagination>.active>span,
+.pagination>.active>span:focus,
+.pagination>.active>span:hover {
+	z-index: 2;
+	color: #fff;
+	cursor: default;
+	background-color: #005978;
+	border-color: #004867;
+}
+
+/******************************
+	-- CNS Text Color Overrides
+*******************************/
+.cns-orange {
+	color: #f58220;
+}
+.cns-yellow {
+	color: #f5c400;
+}
+.cns-dark-gray {
+	color: #423931;
+}
+.cns-light-gray {
+	color: #efece8;
+}
+.cns-dark-blue {
+	color: #005978;
+}
+
+/******************************
+	-- CNS Button Color Overrides
+*******************************/
+
+.cns-btn-orange {
+	color: #fff;
+	background-color: #f58220;
+	border-color: #e47119;
+}
+.cns-btn-orange:hover{
+	background-color: #e47119;
+}
+.cns-btn-yellow {
+	color: #005978;
+	background-color: #f5c400;
+	border-color: #d3a200;
+}
+.cns-btn-yellow:hover{
+	background-color: #d3a200;
+}
+.cns-btn-dark-gray {
+	color: #fff;
+	background-color: #423931;
+	border-color: #312820;
+}
+.cns-btn-dark-gray:hover{
+	background-color: #312820;
+}
+.cns-btn-light-gray {
+	color: #423931;
+	background-color: #efece8;
+	border-color: #cdcac6;
+}
+.cns-btn-light-gray:hover{
+	background-color: #cdcac6;
+}
+.cns-btn-dark-blue {
+	color: #fff;
+	background-color: #005978;
+	border-color: #004867;
+}
+.cns-btn-dark-blue:hover{
+	background-color: #004867;
+}
+
+
+/*
+
+	-- OLD STUFF
+
+textarea {
+	resize: none;
+}
+.logo-primary {
+	color: #f79729;
+}
+.logo-primary:hover {
+	color: #33455c;
+}
+.navbar-brand > img.navbar-logo {
+	position: absolute;
+	top: 5px;
+}
+.mute-contents {
+	padding: 20px 0px 20px 0px;
+	margin: 0px 2px 0px 2px;
+	border: 3px solid #33455c;
+	border-radius: 5px;
+}
+.mute-contents > * {
+	color: #33455c;
+}
+.mute-contents:hover {
+	/!*color: #909194;*!/
+	border-color: #f79729;
+}
+.mute-contents > *:hover {
+	/!*color: #909194;*!/
+	color: #f79729;
+	text-decoration: none;
+}
+.logo-blue {
+	background-color: #003768;
+}
+.logo-orange {
+	color: #F89829;
+}
+.form-horizontal .control-label.left {
+	text-align: left;
+}
+*/

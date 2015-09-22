@@ -1,0 +1,17 @@
+{{ define "title" }}index page{{ end }}
+
+{{ define "navbar" }}
+{{ template "navbar_user" . }}
+{{ end }}
+
+{{ define "content" }}
+	<div>
+	{{ .map1.message }}
+	</div>
+
+	{{ .map1.message2 }}
+
+	{{ range $i, $v := .slice }}
+		<h1>{{ $i }} : {{ $v }}</h1>
+	{{ end }}
+{{ end }}
