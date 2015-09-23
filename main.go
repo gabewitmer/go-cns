@@ -2,19 +2,23 @@ package main
 
 import (
 	"github.com/cagnosolutions/web"
+	"github.com/cagnosolutions/web/tmpl"
 )
+
+var ts = tmpl.NewTemplateStore(true)
+var db DB
 
 func main() {
 	mux := web.NewMux("CTIXID", (web.HOUR / 2))
-	mux.Get("/", getHome)
+
+	mux.Get("/", root)
 	mux.Get("/login", getLogin)
-	mux.Get("/driver/home", getDriverHome)
-	mux.Get("/admin/home", getAdminHome)
-	mux.Get("/admin/companies", getAdminCompanies)
-	mux.Get("/admin/company", getAdminCompany)
-	mux.Get("/admin/company/drivers", getAdminCompanyDrivers)
-	mux.Get("/admin/company/vehicles", getAdminCompanyVehicles)
-	mux.Get("/success", setMessage)
-	mux.Get("/hey/:name/you", getHey)
+	mux.Post("/login", postLogin)
+	mux.Get("/logout", getLogout)
+
+	AdminRoutes(mux)
+
+	//mux.Get("/driver/home", getDriverHome)
+
 	mux.Serve(":8080")
 }

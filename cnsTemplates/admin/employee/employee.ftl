@@ -11,7 +11,7 @@
 				<div class="col-lg-12">
 					<#include "../../stubs/alerts.ftl"/>
 				</div>
-				
+
 				<!-- BREADCRUMB NAVIGATION -->
 				<div class="col-lg-12">
 					<ol class="breadcrumb">
@@ -28,11 +28,11 @@
 						<#else>
 							${(employee??)?string('<li class="active">${(employee.firstName)!} ${(employee.lastName)!}</li>','')!}
 						</#if>
-					
+
 					</ol>
 				</div>
 				<!-- BREADCRUMB NAVIGATION -->
-				
+
 				<#if employee?? || addnew??>
 					<div class="col-lg-4">
 						<div class="panel panel-default">
@@ -42,7 +42,7 @@
 							</div>
 							<div class="panel-body">
 								<form class="form-horizontal" action="/admin/employee/${(addnew??)? string('add', 'edit')}" method="post">
-									
+
 									<div class="form-group">
 										<label class="control-label col-lg-4">First Name</label>
 										<div class="col-lg-8">
