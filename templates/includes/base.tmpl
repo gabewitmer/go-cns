@@ -44,7 +44,6 @@
 					{{ end }}
 				</div>
 			</div>
-
         	{{ template "content" . }}
 		</div>
 		<div>
@@ -60,7 +59,6 @@
 </html>
 {{ end }}
 
-<!-- we define empty blocks for optional content so we don't have to define a block in a child template if we don't need to -->
-{{ define "scripts" }}{{ end }}
-{{ define "sidebar" }}{{ end }}
 {{ define "head" }}{{ end }}
+{{ define "navbar" }}{{ end }}
+{{ define "scripts" }}{{ end }}

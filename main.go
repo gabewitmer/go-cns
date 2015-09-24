@@ -18,7 +18,14 @@ func main() {
 
 	AdminRoutes(mux)
 
-	//mux.Get("/driver/home", getDriverHome)
+	mux.Get("/:slug", companyLanding)
+	mux.Get("/:slug/login", companyLogin)
+	mux.Post("/:slug/login", postCompanyLogin)
+	mux.Get("/:slug/logout", companyLogout)
+	mux.Get("/:slug/register", companyRegister)
+	mux.Post("/:slug/register", postCompanyRegister)
+	mux.Get("/:slug/driver", getDriverHome)
+	mux.Get("/:slug/document/:id", getDocument)
 
 	mux.Serve(":8080")
 }

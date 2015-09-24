@@ -56,8 +56,8 @@ type Driver struct {
 	State     string
 	Zip       string
 	Email     string
-	DOB       int64
-	Status    int8
+	DOB       string
+	Status    int8 // o = unqualified, 1 = pending, 2 = denied, 3 = active, 4 = suspended
 	UserId    string
 	CompanyId string
 }
@@ -67,4 +67,14 @@ type Vehicle struct {
 	Name      string
 	Type      int
 	CompanyId string
+}
+
+type Document struct {
+	Id         string
+	Name       string
+	DocumentId string
+	Complete   bool
+	Data       string
+	CompanyId  string
+	DriverId   string
 }
