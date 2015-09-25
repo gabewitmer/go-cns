@@ -85,6 +85,12 @@ func postCompanyRegister(w http.ResponseWriter, r *http.Request, c *web.Context)
 		fmt.Fprintf(w, "404 Not Page Found")
 		return
 	}
+	email := r.FormValue("email")
+	if !CanUpdate("", email) {
+		c.SetFlash("alertError", "Email already registered")
+		http.Redirect(w, r, "/"+c.GetPathVar("slug")+"/register", 303)
+		return
+	}
 	dob := r.FormValue("dateOfBirth")
 	dobTS, err := time.Parse("2006-01-02", dob)
 	if err != nil {
@@ -95,8 +101,8 @@ func postCompanyRegister(w http.ResponseWriter, r *http.Request, c *web.Context)
 	userId := web.UUID4()
 	user := User{
 		Id:       userId,
-		Email:    r.FormValue("email"),
-		Password: r.FormValue("email"),
+		Email:    email,
+		Password: email,
 		Role:     "driver",
 		Active:   true,
 	}
@@ -127,12 +133,12 @@ func postCompanyRegister(w http.ResponseWriter, r *http.Request, c *web.Context)
 	}
 	documentId := web.UUID4()
 	document := Document{
-		Id: documentId,
+		Id:         documentId,
 		DocumentId: "100",
-		CompanyId: company.Id,
-		DriverId: driverId,
-		Name: "dqf-100",
-		Complete: false,
+		CompanyId:  company.Id,
+		DriverId:   driverId,
+		Name:       "dqf-100",
+		Complete:   false,
 	}
 	db.Set("document", documentId, document)
 	db.Set("user", userId, user)
@@ -164,9 +170,9 @@ func getDriverHome(w http.ResponseWriter, r *http.Request, c *web.Context) {
 	}
 	msgK, msgV := c.GetFlash()
 	ts.Render(w, "driver-home.tmpl", tmpl.Model{
-		msgK:     msgV,
-		"driver": driver,
-		"slug":   c.GetPathVar("slug"),
+		msgK:        msgV,
+		"driver":    driver,
+		"slug":      c.GetPathVar("slug"),
 		"documents": GetDriverDocuments(driver.Id),
 	})
 	return
@@ -193,17 +199,50 @@ func getDocument(w http.ResponseWriter, r *http.Request, c *web.Context) {
 	var document Document
 	if ok := db.GetAs("document", c.GetPathVar("id"), &document); !ok {
 		c.SetFlash("alertError", "Error finding document")
-		c.Logout()
-		http.Redirect(w, r, "/"+c.GetPathVar("slug"), 303)
+		//c.Logout()
+		http.Redirect(w, r, "/"+c.GetPathVar("slug")+"/driver", 303)
 		return
 	}
-	ts.Render(w, document.Name + ".tmpl", tmpl.Model{
-		"driver": driver,
-		"company": company,
+	ts.Render(w, document.Name+".tmpl", tmpl.Model{
+		"driver":   driver,
+		"company":  company,
 		"document": document,
 	})
 
- }
+}
+
+func saveDocument(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "driver", "/"+c.GetPathVar("slug")) {
+		return
+	}
+	var document Document
+	if ok := db.GetAs("document", r.FormValue("id"), &document); !ok {
+		c.SetFlash("alertError", "Error finding document")
+		http.Redirect(w, r, "/"+c.GetPathVar("slug")+"/driver", 303)
+		return
+	}
+	document.Data = r.FormValue("data")
+	db.Set("document", r.FormValue("id"), document)
+	c.SetFlash("alertSuccess", "Successfully save document")
+	fmt.Fprintf(w, "/%s/driver", c.GetPathVar("slug"))
+}
+
+func completeDocument(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "driver", "/"+c.GetPathVar("slug")) {
+		return
+	}
+	var document Document
+	if ok := db.GetAs("document", r.FormValue("id"), &document); !ok {
+		c.SetFlash("alertError", "Error finding document")
+		http.Redirect(w, r, "/"+c.GetPathVar("slug")+"/driver", 303)
+		return
+	}
+	document.Data = r.FormValue("data")
+	document.Complete = true
+	db.Set("document", r.FormValue("id"), document)
+	c.SetFlash("alertSuccess", "Successfully completed document")
+	fmt.Fprintf(w, "/%s/driver", c.GetPathVar("slug"))
+}
 
 func GetCompBySlug(slug string, ptr interface{}) bool {
 	for _, company := range *db.GetStore("company") {
@@ -261,4 +300,13 @@ func GetDriverDocuments(driverId string) []interface{} {
 		}
 	}
 	return docs
+}
+
+func CanUpdate(id, email string) bool {
+	for _, user := range *db.GetStore("user") {
+		if user.(map[string]interface{})["Id"] != id && user.(map[string]interface{})["Email"] == email {
+			return false
+		}
+	}
+	return true
 }

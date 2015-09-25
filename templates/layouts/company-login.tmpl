@@ -55,6 +55,8 @@
 </div>
 {{ end }}
 {{ define "scripts" }}
+{{ if .company.Logo }}
 <script src="/static/js/color-theif.min.js"></script>
 <script src="/static/js/color-styler.js"></script>
+{{ end }}
 {{ end }}

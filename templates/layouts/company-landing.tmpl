@@ -32,15 +32,17 @@
 					<br/>
 				<div class="text-center">
 					<a href="/{{ .company.Slug }}/register">
-						<div class="col-lg-offset-2 col-lg-3 styler img-thumbnail">
+						<div class="col-lg-5 styler img-thumbnail">
 							<i class="fa fa-user-plus fa-3x"></i>
-							<p>Driver Registration</p>
+							<p>Driver</p>
+							<p>Registration</p>
 						</div>
 					</a>
 					<a href="/{{ .company.Slug }}/login">
-						<div class="col-lg-offset-2 col-lg-3 styler img-thumbnail">
+						<div class="col-lg-offset-2 col-lg-5 styler img-thumbnail">
 							<i class="fa fa-sign-in fa-3x"></i>
-							<p>Driver Login</p>
+							<p>Driver</p>
+							<p>Login</p>
 						</div>
 					</a>
 				</div>
@@ -53,6 +55,8 @@
 </div>
 {{ end }}
 {{ define "scripts" }}
+{{ if .company.Logo }}
 <script src="/static/js/color-theif.min.js"></script>
 <script src="/static/js/color-styler.js"></script>
+{{ end }}
 {{ end }}

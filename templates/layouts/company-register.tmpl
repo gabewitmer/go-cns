@@ -115,7 +115,7 @@
 				</p>
 			</div>
 			<div class="modal-footer">
-				<a href="/landing/${(companySlug)!}" class="btn btn-default" >Disagree</a>
+				<a href="/{{ .company.Slug }}" class="btn btn-default" >Disagree</a>
 				<button type="button" class="btn btn-primary" data-dismiss="modal">Agree</button>
 			</div>
 		</div>
@@ -124,11 +124,13 @@
 {{ end }}
 
 {{ define "scripts" }}
-<script src="/static/js/color-theif.min.js"></script>
-<script src="/static/js/color-styler.js"></script>
 <script>
 	$(document).ready(function() {
 		$('#disclaimerModal').modal('show');
 	});
 </script>
+{{ if .company.Logo }}
+<script src="/static/js/color-theif.min.js"></script>
+<script src="/static/js/color-styler.js"></script>
+{{ end }}
 {{ end }}

@@ -25,6 +25,8 @@ func main() {
 	mux.Get("/:slug/register", companyRegister)
 	mux.Post("/:slug/register", postCompanyRegister)
 	mux.Get("/:slug/driver", getDriverHome)
+	mux.Post("/:slug/document/save", saveDocument)
+	mux.Post("/:slug/document/complete", completeDocument)
 	mux.Get("/:slug/document/:id", getDocument)
 
 	mux.Serve(":8080")
