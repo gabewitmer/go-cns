@@ -3,7 +3,7 @@
 
 <br/><br/>
 <div id="invalidMsg" class="hide alert alert-danger alert-dismissable">
-	INVALID: Document is not completely filled.
+	INVALID: Document is not filled out completely.
 </div>
 
 <div class="col-lg-12 text-center"><h1>DRIVER'S APPLICATION FOR EMPLOYMENT | DQF 100</h1></div>
@@ -126,11 +126,11 @@
 								</thead>
 								<tbody>
 									<tr class="multiple">
-										<td><input type="text" class="form-control input-sm" name="street" id="multi" required></td>
-										<td><input type="text" class="form-control input-sm" name="city" id="multi"  required></td>
-										<td><input type="text" class="form-control input-sm" name="state" id="multi" required></td>
-										<td><input type="text" class="form-control input-sm" name="zip" id="multi" required></td>
-										<td><input type="text" class="form-control input-sm" name="length" id="multi" required></td>
+										<td><input type="text" class="form-control input-sm" name="previous-street" id="multi" required></td>
+										<td><input type="text" class="form-control input-sm" name="previous-city" id="multi"  required></td>
+										<td><input type="text" class="form-control input-sm" name="previous-state" id="multi" required></td>
+										<td><input type="text" class="form-control input-sm" name="previous-zip" id="multi" required></td>
+										<td><input type="text" class="form-control input-sm" name="previous-length" id="multi" required></td>
 										<td id="remove-button"></td>
 									</tr>
 								</tbody>
@@ -142,7 +142,7 @@
 					<div class="row">
 						<label class="col-lg-2">DATE OF BIRTH</label>
 						<div class="col-lg-2">
-							<input type="text" name="applicant-date-of-birth" class="form-control input-sm" required>
+							<input type="text" name="applicant-date-of-birth" class="form-control input-sm" value="{{ .driver.DOB }}" required>
 						</div>
 						<label class="col-lg-2">TELEPHONE</label>
 						<div class="col-lg-2">
@@ -250,63 +250,63 @@
 									<div class="row">
 										<label class="col-lg-2">STREET</label>
 										<div class="col-lg-10">
-											<input type="text" name="street" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-street" id="multi" class="form-control input-sm" required>
 										</div>
 									</div>
 									<div class="row">
 										<label class="col-lg-2">CITY</label>
 										<div class="col-lg-4">
-											<input type="text" name="city" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-city" id="multi" class="form-control input-sm" required>
 										</div>
 										<label class="col-lg-1">State</label>
 										<div class="col-lg-2">
-											<input type="text" name="state" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-state" id="multi" class="form-control input-sm" required>
 										</div>
 										<label class="col-lg-1">Zip</label>
 										<div class="col-lg-2">
-											<input type="text" name="zip" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-zip" id="multi" class="form-control input-sm" required>
 										</div>
 									</div>
 									<div class="row">
 										<label class="col-lg-2">CONTACT PERSON</label>
 										<div class="col-lg-6">
-											<input type="text" name="contact-name" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-contact-name" id="multi" class="form-control input-sm" required>
 										</div>
 										<label class="col-lg-2">TELEPHONE</label>
 										<div class="col-lg-2">
-											<input type="text" name="contact-phone" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-contact-phone" id="multi" class="form-control input-sm" required>
 										</div>
 									</div>
 									<div class="row">
 										<label class="col-lg-9">WAS YOUR POSITION SAFETY SENSITIVE REQUIRING PART 40 DRUG AND ALCOHOL TESTING?</label>
 										<label class="checkbox-inline">
-											<input type="checkbox" name="drug-testing" id="multi" value="true"> Yes
+											<input type="checkbox" name="previous-employer-drug-testing" id="multi" value="true"> Yes
 										</label>
 									</div>
 									<div class="row">
 										<label class="col-lg-2">FROM:</label>
 										<div class="col-lg-4">
-											<input type="text" name="date-from" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-date-from" id="multi" class="form-control input-sm" required>
 										</div>
 										<label class="col-lg-2">DATE TO:</label>
 										<div class="col-lg-4">
-											<input type="text" name="date-to" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-date-to" id="multi" class="form-control input-sm" required>
 										</div>
 									</div>
 									<div class="row">
 										<label class="col-lg-2">POSITION HELD</label>
 										<div class="col-lg-6">
-											<input type="text" name="position" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-position" id="multi" class="form-control input-sm" required>
 										</div>
 										<label class="col-lg-1">SALARY</label>
 										<div class="col-lg-3">
-											<input type="text" name="salary" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-salary" id="multi" class="form-control input-sm" required>
 										</div>
 									</div>
 									<div class="row">
 										<label class="col-lg-2">REASON FOR LEAVING</label>
 										<div class="col-lg-10">
-											<input type="text" name="leaving-reason" id="multi" class="form-control input-sm" required>
+											<input type="text" name="previous-employer-leaving-reason" id="multi" class="form-control input-sm" required>
 										</div>
 									</div>
 									<div class="row">

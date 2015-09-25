@@ -6,7 +6,6 @@ import (
 )
 
 var ts = tmpl.NewTemplateStore(true)
-var db DB
 
 func main() {
 	mux := web.NewMux("CTIXID", (web.HOUR / 2))
@@ -17,14 +16,10 @@ func main() {
 	mux.Get("/logout", getLogout)
 
 	AdminRoutes(mux)
+	CompanyRoutes(mux)
 
-	mux.Get("/:slug", companyLanding)
-	mux.Get("/:slug/login", companyLogin)
-	mux.Post("/:slug/login", postCompanyLogin)
-	mux.Get("/:slug/logout", companyLogout)
-	mux.Get("/:slug/register", companyRegister)
-	mux.Post("/:slug/register", postCompanyRegister)
 	mux.Get("/:slug/driver", getDriverHome)
+
 	mux.Post("/:slug/document/save", saveDocument)
 	mux.Post("/:slug/document/complete", completeDocument)
 	mux.Get("/:slug/document/:id", getDocument)

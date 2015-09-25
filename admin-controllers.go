@@ -5,10 +5,14 @@ import (
 
 	"github.com/cagnosolutions/web"
 	"github.com/cagnosolutions/web/tmpl"
+	"github.com/gabewitmer/go-cns/service"
 )
 
+// GET admin home
 func AdminHome(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
 	msgK, msgV := c.GetFlash()
 	ts.Render(w, "admin-home.tmpl", tmpl.Model{
 		msgK: msgV,
@@ -16,83 +20,128 @@ func AdminHome(w http.ResponseWriter, r *http.Request, c *web.Context) {
 	return
 }
 
+// GET admin all employees
 func AdminEmployeeGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
-	msgK, msgV := c.GetFlash()
-
-	ts.Render(w, "admin-employee.tmpl", tmpl.Model{
-		msgK:        msgV,
-		"employees": db.GetStore("employee"),
-	})
-	return
-}
-
-func AdminEmployeeAdd(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
-
-	http.Redirect(w, r, "/admin/employee", 303)
-	return
-}
-
-func AdminEmployeeEdit(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
-
-	http.Redirect(w, r, "/admin/employee", 303)
-	return
-}
-
-func AdminEmployeeGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
-	msgK, msgV := c.GetFlash()
-
-	ts.Render(w, "admin-employee.tmpl", tmpl.Model{
-		msgK:        msgV,
-		"employees": db.GetStore("employee"),
-		"employee":  db.Get("employee", c.GetPathVar("id")),
-	})
-	return
-}
-
-func AdminEmployeeDelete(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
-	var employee Employee
-	id := c.GetPathVar("id")
-	ok := db.GetAs("employee", id, &employee)
-	if ok {
-		db.Del("user", employee.UserId)
-		db.Del("employee", id)
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
 	}
+	msgK, msgV := c.GetFlash()
+	ts.Render(w, "admin-employee.tmpl", tmpl.Model{
+		msgK:        msgV,
+		"employees": service.FindAllEmployee(),
+	})
+	return
+}
+
+// POST add employee
+func AdminEmployeeAdd(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
+	email := r.FormValue("email")
+	if !service.CanUpdate("", email) {
+		c.SetFlash("alertError", "Email already registered")
+	}
+	employeeId := web.UUID4()
+	employee := service.MakeEmployee(r.Form)
+	userId := web.UUID4()
+	user := service.User{
+		Id:       userId,
+		Email:    email,
+		Password: email,
+		Role:     "employee",
+		Active:   true,
+	}
+	employee.UserId = userId
+	service.SaveUser(user)
+	service.SaveEmployee(employee)
+	c.SetFlash("alertSuccess", "Successfully added employee")
+	http.Redirect(w, r, "/admin/employee", 303)
+	return
+}
+
+// POST edit employee
+func AdminEmployeeEdit(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
+	email := r.FormValue("email")
+	if !service.CanUpdate(r.FormValue("employeeId"), email) {
+		c.SetFlash("alertError", "Email already registered")
+	}
+	employee := service.MakeEmployee(r.Form)
+	user := service.MakeUser(r.Form)
+	service.SaveEmployee(employee)
+	service.SaveUser(user)
+	c.SetFlash("alertSuccess", "Successfully saved employee")
+	http.Redirect(w, r, "/admin/employee", 303)
+	return
+}
+
+// GET admin get one employee
+func AdminEmployeeGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
+	msgK, msgV := c.GetFlash()
+	ts.Render(w, "admin-employee.tmpl", tmpl.Model{
+		msgK:        msgV,
+		"employees": service.FindAllEmployee(),
+		"employee":  service.FindOneEmployee(c.GetPathVar("id")),
+	})
+	return
+}
+
+// POST admin delete employee
+func AdminEmployeeDelete(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
+	service.DeleteEmployee(c.GetPathVar("id"))
 	c.SetFlash("alertSuccess", "Successfully deleted employee")
 	http.Redirect(w, r, "/admin/employee", 303)
 	return
 }
 
+// GET admin get companies
 func AdminCompanyGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
 	msgK, msgV := c.GetFlash()
 	ts.Render(w, "admin-companies.tmpl", tmpl.Model{
 		msgK:        msgV,
 		"addNew":    r.FormValue("addNew") == "true",
-		"companies": db.GetStore("companies"),
+		"companies": service.FindAllCompany(),
 	})
 	return
 }
 
+// POST admin save company
 func AdminCompanySave(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
-
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
+	company := service.MakeCompany(r.Form)
+	company.Id = web.UUID4()
+	service.SaveCompany(company)
+	c.SetFlash("alertSuccess", "Successfully saved company")
 	http.Redirect(w, r, "/admin/company", 303)
 	return
 }
 
+// GET admin get company
 func AdminCompanyGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
+
 	msgK, msgV := c.GetFlash()
 	driverCount := 0
 	vehicleCount := 0
 	ts.Render(w, "admin-company.tmpl", tmpl.Model{
 		msgK:           msgV,
-		"company":      db.Get("companny", c.GetPathVar("id")),
+		"company":      service.FindOneCompany(c.GetPathVar("id")),
 		"driverCount":  driverCount,
 		"vehicleCount": vehicleCount,
 	})
