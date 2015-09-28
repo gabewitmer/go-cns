@@ -1,5 +1,15 @@
 package service
 
+import (
+	"fmt"
+	"math"
+	"net/url"
+	"strconv"
+	"time"
+
+	"github.com/cagnosolutions/web/util"
+)
+
 type Driver struct {
 	Id        string
 	FirstName string
@@ -35,6 +45,70 @@ func SaveDriver(driver Driver) {
 	db.Set("driver", driver.Id, driver)
 }
 
+func FindOneDriverByCompanyLogin(email, password, companyId string) (Driver, bool) {
+	var user User
+	var driver Driver
+	ok := db.Query("user", map[string]interface{}{"Email": email, "Password": password, "Role": "driver", "Active": true}, &user)
+	if ok {
+		ok = db.Query("driver", map[string]interface{}{"UserId": user.Id, "companyId": companyId}, &driver)
+	}
+	return driver, ok
+
+}
+
 func DeleteDriver(id string) {
+	var driver Driver
+	db.GetAs("driver", id, &driver)
+	db.Del("user", driver.UserId)
 	db.Del("driver", id)
+}
+
+func MakeDriver(dat url.Values) Driver {
+	driver := Driver{
+		Id:        dat.Get("driverId"),
+		FirstName: dat.Get("firstName"),
+		LastName:  dat.Get("lastName"),
+		Street:    dat.Get("street"),
+		City:      dat.Get("city"),
+		State:     dat.Get("state"),
+		Zip:       dat.Get("zip"),
+		Email:     dat.Get("email"),
+		DOB:       formatDate(dat.Get("dob")),
+		UserId:    dat.Get("userId"),
+		CompanyId: dat.Get("companyId"),
+	}
+	s, _ := strconv.Atoi(dat.Get("status"))
+	driver.Status = int8(s)
+	return driver
+}
+
+func NewDriver(dat url.Values) (Driver, User) {
+	user := User{
+		Id:       util.UUID4(),
+		Email:    dat.Get("email"),
+		Password: dat.Get("email"),
+		Role:     "driver",
+		Active:   true,
+	}
+	driver := MakeDriver(dat)
+	driver.Id = util.UUID4()
+	driver.UserId = user.Id
+	driver.Status = 1
+	return driver, user
+}
+
+func FindAllDriverByCompany(companyId string) []Driver {
+	var drivers []Driver
+	db.QueryAll("driver", map[string]interface{}{"CompanyId": companyId}, &drivers)
+	return drivers
+}
+
+func formatDate(date string) string {
+	ds := util.SliceString(date, '-')
+	return fmt.Sprintf("%s/%s/%s", ds[1], ds[2], ds[0])
+}
+
+func GetDriverAge(dob int64) int32 {
+	diff := time.Now().UnixNano() - dob
+	return int32(math.Floor((float64(diff) / float64(1000) / float64(1000) / float64(1000) / float64(60) / float64(60) / float64(24) / float64(365.25))))
 }

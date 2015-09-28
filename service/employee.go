@@ -1,5 +1,11 @@
 package service
-import "net/url"
+
+import (
+	"net/url"
+
+	"github.com/cagnosolutions/web/util"
+)
+
 type Employee struct {
 	Id        string
 	FirstName string
@@ -28,6 +34,16 @@ func FindOneEmployee(id string) Employee {
 	return employee
 }
 
+func FindOneEmployeeByLogin(email, password string) (Employee, string, bool) {
+	var employee Employee
+	var user User
+	ok := db.Query("user", map[string]interface{}{"Email": email, "Password": password, "Active": true}, &user)
+	if ok && (user.Role == "admin" || user.Role == "employee") {
+		ok = db.Query("employee", map[string]interface{}{"UserId": user.Id}, &employee)
+	}
+	return employee, user.Role, ok
+}
+
 func SaveEmployee(employee Employee) {
 	db.Set("employee", employee.Id, employee)
 }
@@ -51,4 +67,18 @@ func MakeEmployee(dat url.Values) Employee {
 		Email:     dat.Get("email"),
 		UserId:    dat.Get("userId"),
 	}
+}
+
+func NewEmployee(dat url.Values) (Employee, User) {
+	user := User{
+		Id:       util.UUID4(),
+		Email:    dat.Get("email"),
+		Password: dat.Get("email"),
+		Role:     "driver",
+		Active:   true,
+	}
+	employee := MakeEmployee(dat)
+	employee.Id = util.UUID4()
+	employee.UserId = user.Id
+	return employee, user
 }

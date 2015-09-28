@@ -23,7 +23,7 @@ func FindAllCompany() []Company {
 	var companys []Company
 	for _, c := range *db.GetStore("company") {
 		var company Company
-		Morph(c, company)
+		Morph(c, &company)
 		companys = append(companys, company)
 	}
 	return companys
@@ -35,11 +35,20 @@ func FindOneCompany(id string) Company {
 	return company
 }
 
+func FindOneCompanyBySlug(slug string) (Company, bool) {
+	var company Company
+	ok := db.Query("company", map[string]interface{}{"Slug": slug}, &company)
+	return company, ok
+}
+
 func SaveCompany(company Company) {
 	db.Set("company", company.Id, company)
 }
 
 func DeleteCompany(id string) {
+	var company Company
+	db.GetAs("company", id, &company)
+	db.Del("user", company.UserId)
 	db.Del("company", id)
 }
 

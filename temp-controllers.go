@@ -1,15 +1,6 @@
 package main
 
-import (
-	"encoding/json"
-	"fmt"
-	"log"
-	"math"
-	"time"
-
-	"github.com/cagnosolutions/web"
-)
-
+/*
 func GetCompBySlug(slug string, ptr interface{}) bool {
 	for _, company := range *db.GetStore("company") {
 		if company.(map[string]interface{})["Slug"] == slug {
@@ -81,3 +72,4 @@ func FormatDate(date string) string {
 	ds := web.SliceString(date, '-')
 	return fmt.Sprintf("%s/%s/%s", ds[1], ds[2], ds[0])
 }
+*/

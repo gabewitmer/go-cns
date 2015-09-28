@@ -1,5 +1,12 @@
 package service
 
+import (
+	"net/url"
+	"strconv"
+
+	"github.com/cagnosolutions/web/util"
+)
+
 type Vehicle struct {
 	Id        string
 	Name      string
@@ -29,4 +36,24 @@ func SaveVehicle(vehicle Vehicle) {
 
 func DeleteVehicle(id string) {
 	db.Del("vehicle", id)
+}
+
+func FindAllVehicleByCompany(companyId string) []Vehicle {
+	var vehicles []Vehicle
+	db.QueryAll("vehicle", map[string]interface{}{"CompanyId": companyId}, &vehicles)
+	return vehicles
+}
+
+func MakeVehicle(dat url.Values) Vehicle {
+	vehicle := Vehicle{
+		Id:        dat.Get("vehicleId"),
+		Name:      dat.Get("name"),
+		CompanyId: dat.Get("companyId"),
+	}
+	t, _ := strconv.Atoi(dat.Get("type"))
+	vehicle.Type = t
+	if vehicle.Id == "" {
+		vehicle.Id = util.UUID4()
+	}
+	return vehicle
 }

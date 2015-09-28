@@ -1,5 +1,10 @@
 package service
 
+import (
+	"net/url"
+	"strconv"
+)
+
 type Document struct {
 	Id         string
 	Name       string
@@ -20,6 +25,12 @@ func FindAllDocument() []Document {
 	return documents
 }
 
+func FindAllDocumentByDriver(driverId string) []Document {
+	var documents []Document
+	db.QueryAll("document", map[string]interface{}{"DriverId": driverId, "Complete": false}, &documents)
+	return documents
+}
+
 func FindOneDocument(id string) Document {
 	var document Document
 	db.GetAs("document", id, &document)
@@ -32,4 +43,18 @@ func SaveDocument(document Document) {
 
 func DeleteDocument(id string) {
 	db.Del("document", id)
+}
+
+func MakeDocument(dat url.Values) Document {
+	document := Document{
+		Id:         dat.Get("documentId"),
+		Name:       dat.Get("name"),
+		DocumentId: dat.Get("docId"),
+		Data:       dat.Get("data"),
+		CompanyId:  dat.Get("companyId"),
+		DriverId:   dat.Get("driverId"),
+	}
+	c, _ := strconv.ParseBool(dat.Get("complete"))
+	document.Complete = c
+	return document
 }
