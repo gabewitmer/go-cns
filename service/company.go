@@ -59,6 +59,14 @@ func DeleteCompany(id string) {
 	db.Del("company", id)
 }
 
+func GetVehicleCount(companyId string) int {
+	return len(FindAllVehicleByCompany(companyId))
+}
+
+func GetDriverCount(companyId string) int {
+	return len(FindAllDriverByCompany(companyId))
+}
+
 func MakeCompany(dat url.Values) Company {
 	company := Company{
 		Id:     dat.Get("companyId"),

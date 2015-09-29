@@ -1,0 +1,72 @@
+{{ define "title" }}Vehicle{{ end }}
+
+{{ define "navbar" }}
+	{{ template "secure-admin-navbar" . }}
+{{ end }}
+
+{{ define "content" }}
+	<div class="row">
+
+		<!-- BREADCRUMB NAVIGATION -->
+		<div class="col-lg-12">
+			<ol class="breadcrumb">
+				<li>
+					<a href="/">Home</a>
+				</li>
+				<li>
+					<a href="/admin/company">Companies</a>
+				</li>
+				<li>
+					<a href="/admin/company/{{ .company.Id }}">{{ .company.Name }}</a>
+				</li>
+				<li class="active">
+					Vehicles
+				</li>
+				<li>
+					<a href="/admin/company/{{ .company.Id }}/vehicle/new"><i class="fa fa-plus">&nbsp;Add New</i></a>
+				</li>
+			</ol>
+		</div>
+		<!-- BREADCRUMB NAVIGATION -->
+
+		<div class="col-lg-12">
+			<legend>{{ .company.Name }}'s Vehicles</legend>
+			{{ if .vehicles }}
+				<table id="vehicles" class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th>Id</th>
+							<th>Name</th>
+							<th>Type</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{ range $vehicle := .vehicles }}
+							<tr>
+								<td>
+									<a href="/admin/company/{{ $vehicle.CompanyId }}/vehicle/{{ $vehicle.Id }}" class="btn btn-primary btn-xs">{{ $vehicle.Id }}</a>
+								</td>
+								<td>{{ $vehicle.Name }}</td>
+								<td>{{ $vehicle.Type }}</td>
+							</tr>
+						{{ end }}
+					</tbody>
+				</table>
+			{{ else }}
+				<div class="text-center panel-body">
+					No Vehicles
+				</div>
+			{{ end }}
+		</div>
+	</div>
+{{ end }}
+
+{{ define "scripts" }}
+	<script src="/static/js/password.js"></script>
+	<script src="/static/js/delete.js"></script>
+	<script>
+		$(document).ready(function() {
+    		$('#vehicles').DataTable();
+		} );
+	</script>
+{{ end }}

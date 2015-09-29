@@ -132,10 +132,11 @@ func AdminCompanyEdit(w http.ResponseWriter, r *http.Request, c *web.Context) {
 		return
 	}
 	r.ParseForm()
-	company := service.MakeCompany(r.Form)
+	company := service.FindOneCompany(r.FormValue("id"))
+	util.FormToStruct(&company, r.Form, "")
 	service.SaveCompany(company)
 	c.SetFlash("alertSuccess", "Successfully saved company")
-	http.Redirect(w, r, "/admin/company", 303)
+	http.Redirect(w, r, "/admin/company/"+r.FormValue("id"), 303)
 	return
 }
 
@@ -158,13 +159,11 @@ func AdminCompanyGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) 
 		return
 	}
 	msgK, msgV := c.GetFlash()
-	driverCount := 0
-	vehicleCount := 0
 	ts.Render(w, "admin-company.tmpl", tmpl.Model{
 		msgK:           msgV,
 		"company":      service.FindOneCompany(c.GetPathVar("id")),
-		"driverCount":  driverCount,
-		"vehicleCount": vehicleCount,
+		"driverCount":  service.GetDriverCount(c.GetPathVar("id")),
+		"vehicleCount": service.GetVehicleCount(c.GetPathVar("id")),
 	})
 	return
 }
@@ -290,9 +289,8 @@ func AdminCompanyVehicleGetAll(w http.ResponseWriter, r *http.Request, c *web.Co
 		return
 	}
 	msgK, msgV := c.GetFlash()
-	ts.Render(w, "admin-company-driver.tmpl", tmpl.Model{
+	ts.Render(w, "admin-company-vehicle.tmpl", tmpl.Model{
 		msgK:       msgV,
-		"addNew":   r.FormValue("addNew") == "true",
 		"vehicles": service.FindAllVehicleByCompany(c.GetPathVar("companyId")),
 		"company":  service.FindOneCompany(c.GetPathVar("companyId")),
 	})
@@ -304,11 +302,29 @@ func AdminCompanyVehicleSave(w http.ResponseWriter, r *http.Request, c *web.Cont
 	if !c.CheckAuth(w, r, "admin", "/login") {
 		return
 	}
-	vehicle := service.MakeVehicle(r.Form)
+	r.ParseForm()
+	vehicle := service.FindOneVehicle(r.FormValue("id"))
+	util.FormToStruct(&vehicle, r.Form, "")
+	if vehicle.Id == "" {
+		vehicle.Id = util.UUID4()
+	}
 	service.SaveVehicle(vehicle)
 	c.SetFlash("alertSuccess", "Successfully saved vehicle")
 	http.Redirect(w, r, "/admin/company/"+c.GetPathVar("companyId")+"/vehicle", 303)
 	return
+}
+
+// GET admin get new vehicle page
+func AdminCompanyVehicleNew(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
+	msgK, msgV := c.GetFlash()
+	ts.Render(w, "admin-company-vehicle-form.tmpl", tmpl.Model{
+		msgK:       msgV,
+		"vehicles": service.FindAllVehicleByCompany(c.GetPathVar("companyId")),
+		"company":  service.FindOneCompany(c.GetPathVar("companyId")),
+	})
 }
 
 // GET admin get vehicle from company
@@ -317,7 +333,7 @@ func AdminCompanyVehicleGetOne(w http.ResponseWriter, r *http.Request, c *web.Co
 		return
 	}
 	msgK, msgV := c.GetFlash()
-	ts.Render(w, "admin-company-driver.tmpl", tmpl.Model{
+	ts.Render(w, "admin-company-vehicle-form.tmpl", tmpl.Model{
 		msgK:       msgV,
 		"vehicles": service.FindAllVehicleByCompany(c.GetPathVar("companyId")),
 		"vehicle":  service.FindOneVehicle(c.GetPathVar("vehicleId")),
@@ -333,7 +349,7 @@ func AdminCompanyVehicleDelete(w http.ResponseWriter, r *http.Request, c *web.Co
 	}
 	service.DeleteVehicle(c.GetPathVar("vehicleId"))
 	c.SetFlash("alertSuccess", "Successfuly deleted vehicle")
-	http.Redirect(w, r, "/admin/company", 303)
+	http.Redirect(w, r, "/admin/company/"+c.GetPathVar("companyId")+"/vehicle", 303)
 	return
 }
 
