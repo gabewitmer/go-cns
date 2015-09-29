@@ -184,7 +184,19 @@ func AdminCompanyDriverGetAll(w http.ResponseWriter, r *http.Request, c *web.Con
 	msgK, msgV := c.GetFlash()
 	ts.Render(w, "admin-company-driver.tmpl", tmpl.Model{
 		msgK:      msgV,
-		"addNew":  r.FormValue("addNew") == "true",
+		"drivers": service.FindAllDriverByCompany(c.GetPathVar("companyId")),
+		"company": service.FindOneCompany(c.GetPathVar("companyId")),
+	})
+	return
+}
+
+func AdminCompanyDriverNew(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
+	msgK, msgV := c.GetFlash()
+	ts.Render(w, "admin-company-driver-form.tmpl", tmpl.Model{
+		msgK:      msgV,
 		"drivers": service.FindAllDriverByCompany(c.GetPathVar("companyId")),
 		"company": service.FindOneCompany(c.GetPathVar("companyId")),
 	})
@@ -234,7 +246,7 @@ func AdminCompanyDriverGetOne(w http.ResponseWriter, r *http.Request, c *web.Con
 		return
 	}
 	msgK, msgV := c.GetFlash()
-	ts.Render(w, "admin-company-driver.tmpl", tmpl.Model{
+	ts.Render(w, "admin-company-driver-form.tmpl", tmpl.Model{
 		msgK:      msgV,
 		"drivers": service.FindAllDriverByCompany(c.GetPathVar("companyId")),
 		"driver":  service.FindOneDriver(c.GetPathVar("driverId")),

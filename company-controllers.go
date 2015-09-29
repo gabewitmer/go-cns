@@ -94,7 +94,7 @@ func postCompanyRegister(w http.ResponseWriter, r *http.Request, c *web.Context)
 		return
 	}
 	driver, user := service.NewDriver(r.Form)
-	dobTS, err := time.Parse("01/02/2006", driver.DOB)
+	dobTS, err := time.Parse("2006-01-02", driver.DOB)
 	if err != nil {
 		c.SetFlash("alertError", "Error invalid date of birth")
 		http.Redirect(w, r, "/"+c.GetPathVar("slug")+"/register", 303)

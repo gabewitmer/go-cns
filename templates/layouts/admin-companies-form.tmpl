@@ -81,11 +81,6 @@
 							<div class="form-group">
 								<button class="btn btn-primary btn-block">Save</button>
 							</div>
-							<#if company??>
-								<div class="form-group">
-									<a href="#" data-message="Are you sure you would like to permanently delete this company?" data-delete="/admin/company/${(company.id)!}" class="btn btn-danger btn-block delete-button">Delete</a>
-								</div>
-							</#if>
 						</div>
 					</form>
 				</div>
@@ -118,14 +113,11 @@
 						No Companies
 					</div>
 				{{ end }}
-			<!--</div>-->
 		</div>
 	</div>
 {{ end }}
 
 {{ define "scripts" }}
-	<script src="/static/js/password.js"></script>
-	<script src="/static/js/delete.js"></script>
 	<script>
 		$(document).ready(function() {
 	   	$('#companies').DataTable();

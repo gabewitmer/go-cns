@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/cagnosolutions/web/util"
@@ -64,21 +63,23 @@ func DeleteDriver(id string) {
 }
 
 func MakeDriver(dat url.Values) Driver {
-	driver := Driver{
-		Id:        dat.Get("driverId"),
-		FirstName: dat.Get("firstName"),
-		LastName:  dat.Get("lastName"),
-		Street:    dat.Get("street"),
-		City:      dat.Get("city"),
-		State:     dat.Get("state"),
-		Zip:       dat.Get("zip"),
-		Email:     dat.Get("email"),
-		DOB:       formatDate(dat.Get("dob")),
-		UserId:    dat.Get("userId"),
-		CompanyId: dat.Get("companyId"),
-	}
-	s, _ := strconv.Atoi(dat.Get("status"))
-	driver.Status = int8(s)
+	//driver := Driver{
+	//	Id:        dat.Get("driverId"),
+	//	FirstName: dat.Get("firstName"),
+	//	LastName:  dat.Get("lastName"),
+	//	Street:    dat.Get("street"),
+	//	City:      dat.Get("city"),
+	//	State:     dat.Get("state"),
+	//	Zip:       dat.Get("zip"),
+	//	Email:     dat.Get("email"),
+	//	DOB:       formatDate(dat.Get("dob")),
+	//	UserId:    dat.Get("userId"),
+	//	CompanyId: dat.Get("companyId"),
+	//}
+	//s, _ := strconv.Atoi(dat.Get("status"))
+	//driver.Status = int8(s)
+	var driver Driver
+	util.FormToStruct(&driver, dat, "")
 	return driver
 }
 

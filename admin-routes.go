@@ -20,6 +20,7 @@ func AdminRoutes(mux *web.Mux) {
 	mux.Post("/admin/company/upload/:id", AdminUploadCompanyLogo)
 
 	mux.Get("/admin/company/:companyId/driver", AdminCompanyDriverGetAll)
+	mux.Get("/admin/company/:companyId/driver/new", AdminCompanyDriverNew)
 	mux.Post("/admin/company/:companyId/driver/add", AdminCompanyDriverAdd)
 	mux.Post("/admin/company/:companyId/driver/edit", AdminCompanyDriverEdit)
 	mux.Get("/admin/company/:companyId/driver/:driverId", AdminCompanyDriverGetOne)
