@@ -112,13 +112,27 @@ func AdminCompanyGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) 
 	return
 }
 
-// POST admin save company
-func AdminCompanySave(w http.ResponseWriter, r *http.Request, c *web.Context) {
+// POST admin add company
+func AdminCompanyAdd(w http.ResponseWriter, r *http.Request, c *web.Context) {
 	if !c.CheckAuth(w, r, "admin", "/login") {
 		return
 	}
+	r.ParseForm()
 	company := service.MakeCompany(r.Form)
 	company.Id = util.UUID4()
+	service.SaveCompany(company)
+	c.SetFlash("alertSuccess", "Successfully saved company")
+	http.Redirect(w, r, "/admin/company", 303)
+	return
+}
+
+// POST admin edit company
+func AdminCompanyEdit(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "admin", "/login") {
+		return
+	}
+	r.ParseForm()
+	company := service.MakeCompany(r.Form)
 	service.SaveCompany(company)
 	c.SetFlash("alertSuccess", "Successfully saved company")
 	http.Redirect(w, r, "/admin/company", 303)
@@ -213,6 +227,8 @@ func AdminCompanyDriverAdd(w http.ResponseWriter, r *http.Request, c *web.Contex
 		http.Redirect(w, r, "/admin/company/"+c.GetPathVar("companyId")+"/driver", 303)
 		return
 	}
+	r.ParseForm()
+
 	driver, user := service.NewDriver(r.Form)
 	service.SaveDriver(driver)
 	service.SaveUser(user)
@@ -231,7 +247,9 @@ func AdminCompanyDriverEdit(w http.ResponseWriter, r *http.Request, c *web.Conte
 		http.Redirect(w, r, "/admin/company/"+c.GetPathVar("companyId")+"/driver", 303)
 		return
 	}
-	driver := service.MakeDriver(r.Form)
+	r.ParseForm()
+	driver := service.FindOneDriver(c.GetPathVar("driverId"))
+	util.FormToStruct(&driver, r.Form, "")
 	user := service.MakeUser(r.Form)
 	service.SaveDriver(driver)
 	service.SaveUser(user)

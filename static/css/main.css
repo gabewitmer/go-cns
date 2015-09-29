@@ -146,6 +146,11 @@ p.lead{
 	background-color: #004867;
 }
 
+.form-horizontal .control-label {
+	text-align: left;
+	line-height: 100%;
+}
+
 
 /*
 

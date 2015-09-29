@@ -13,8 +13,9 @@ func AdminRoutes(mux *web.Mux) {
 	mux.Post("/admin/employee/:id", AdminEmployeeDelete)
 
 	mux.Get("/admin/company", AdminCompanyGetAll)
-	mux.Post("/admin/company", AdminCompanySave)
 	mux.Get("/admin/company/new", AdminCompanyNew)
+	mux.Post("/admin/company/add", AdminCompanyAdd)
+	mux.Post("/admin/company/edit", AdminCompanyEdit)
 	mux.Get("/admin/company/:id", AdminCompanyGetOne)
 	mux.Post("/admin/company/:id", AdminCompanyDelete)
 	mux.Post("/admin/company/upload/:id", AdminUploadCompanyLogo)

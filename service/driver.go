@@ -91,10 +91,10 @@ func NewDriver(dat url.Values) (Driver, User) {
 		Role:     "driver",
 		Active:   true,
 	}
-	driver := MakeDriver(dat)
+	var driver Driver
+	util.FormToStruct(&driver, dat, "")
 	driver.Id = util.UUID4()
 	driver.UserId = user.Id
-	driver.Status = 1
 	return driver, user
 }
 

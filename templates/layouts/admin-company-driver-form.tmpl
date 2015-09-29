@@ -33,7 +33,7 @@
 		</div>
 		<!-- BREADCRUMB NAVIGATION -->
 
-		<div class="col-lg-4">
+		<div class="col-lg-5">
 			<div class="panel panel-default">
 				<div class="panel-heading clearfix">
 					{{ .company.Name }}'s Driver
@@ -41,18 +41,22 @@
 				</div>
 				<div class="panel-body">
 					<form class="form-horizontal" action="/admin/company/{{ .company.Id }}/driver/{{ if .driver }}edit{{ else }}add{{ end }}" method="post">
-
 						<div class="form-group">
 							<label class="control-label col-lg-4">First Name</label>
 							<div class="col-lg-8">
 								<input type="text" name="firstName" class="form-control" value="{{ .driver.FirstName }}"/>
 							</div>
 						</div>
-
 						<div class="form-group">
 							<label class="control-label col-lg-4">Last Name</label>
 							<div class="col-lg-8">
 								<input type="text" name="lastName" class="form-control" value="{{ .driver.LastName }}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">Date Of Birth</label>
+							<div class="col-lg-8">
+								<input type="date" name="dOB" class="form-control" value="{{ .driver.DOB }}"/>
 							</div>
 						</div>
 						<div class="form-group">
@@ -85,6 +89,18 @@
 								<input type="text" name="zip" class="form-control" value="{{ .driver.Zip }}"/>
 							</div>
 						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">Status</label>
+							<div class="col-lg-8">
+								<select class="form-control" name="status">
+									<option value="0" {{ if .driver }}{{ if eq .driver.Status 0 }}selected{{ end }}{{ end }}>Unqualified</option>
+									<option value="1" {{ if .driver }}{{ if eq .driver.Status 1 }}selected{{ end }}{{ end }}>Pending</option>
+									<option value="2" {{ if .driver }}{{ if eq .driver.Status 2 }}selected{{ end }}{{ end }}>Denied</option>
+									<option value="3" {{ if .driver }}{{ if eq .driver.Status 3 }}selected{{ end }}{{ end }}>Active</option>
+									<option value="4" {{ if .driver }}{{ if eq .driver.Status 4 }}selected{{ end }}{{ end }}>Suspended</option>
+								</select>
+							</div>
+						</div>
 						<div class="col-lg-12">
 							<input type="hidden" name="id" value="{{ .driver.Id }}"/>
 							<input type="hidden" name="userId" value="{{ .driver.UserId }}"/>
@@ -103,7 +119,7 @@
 			</div>
 		</div>
 
-		<div class="col-lg-8">
+		<div class="col-lg-7">
             <legend>
 				{{ .company.Name }}'s Drivers
 			</legend>
@@ -119,10 +135,11 @@
 						</tr>
 					</thead>
 					<tbody>
+						{{ $company := .company }}
 						{{ range $driver := .drivers}}
 							<tr>
 								<td>
-									<a href="/admin/company/${(company.id)!}/driver/{{ $driver.Id }}" class="btn btn-primary btn-xs">{{ $driver.Id }}</a>
+									<a href="/admin/company/{{ $company.Id }}/driver/{{ $driver.Id }}" class="btn btn-primary btn-xs">{{ $driver.Id }}</a>
 								</td>
 								<td>{{ $driver.FirstName }}</td>
 								<td>{{ $driver.LastName }}</td>

@@ -3,6 +3,7 @@ package service
 import (
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 type Company struct {
@@ -17,6 +18,11 @@ type Company struct {
 	Logo           bool
 	Feature        bool
 	UserId         string
+}
+
+func (c * Company) GenerateSlug() {
+	// TODO: add better sanitization
+	c.Slug = strings.ToLower(strings.Replace(c.Name, " ", "-", -1))
 }
 
 func FindAllCompany() []Company {
@@ -42,6 +48,7 @@ func FindOneCompanyBySlug(slug string) (Company, bool) {
 }
 
 func SaveCompany(company Company) {
+	company.GenerateSlug()
 	db.Set("company", company.Id, company)
 }
 
@@ -54,7 +61,7 @@ func DeleteCompany(id string) {
 
 func MakeCompany(dat url.Values) Company {
 	company := Company{
-		Id:     dat.Get("employeeId"),
+		Id:     dat.Get("companyId"),
 		Name:   dat.Get("name"),
 		Street: dat.Get("street"),
 		City:   dat.Get("city"),
