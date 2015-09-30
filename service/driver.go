@@ -28,7 +28,7 @@ func FindAllDriver() []Driver {
 	var drivers []Driver
 	for _, v := range *db.GetStore("driver") {
 		var driver Driver
-		Morph(v, driver)
+		Morph(v, &driver)
 		drivers = append(drivers, driver)
 	}
 	return drivers
@@ -49,7 +49,7 @@ func FindOneDriverByCompanyLogin(email, password, companyId string) (Driver, boo
 	var driver Driver
 	ok := db.Query("user", map[string]interface{}{"Email": email, "Password": password, "Role": "driver", "Active": true}, &user)
 	if ok {
-		ok = db.Query("driver", map[string]interface{}{"UserId": user.Id, "companyId": companyId}, &driver)
+		ok = db.Query("driver", map[string]interface{}{"UserId": user.Id, "CompanyId": companyId}, &driver)
 	}
 	return driver, ok
 

@@ -7,6 +7,7 @@ func AdminRoutes(mux *web.Mux) {
 	mux.Get("/admin/home", AdminHome)
 
 	mux.Get("/admin/employee", AdminEmployeeGetAll)
+	mux.Get("/admin/employee/new", AdminEmployeeNew)
 	mux.Post("/admin/employee/add", AdminEmployeeAdd)
 	mux.Post("/admin/employee/edit", AdminEmployeeEdit)
 	mux.Get("/admin/employee/:id", AdminEmployeeGetOne)
@@ -38,10 +39,16 @@ func AdminRoutes(mux *web.Mux) {
 	mux.Get("/admin/driver/:id", AdminDriverGetOne)
 	mux.Post("/admin/driver/:id", AdminDriverDelete)
 
-	/*
-	   mux.Get("/admin/vehicle", AdminVehicleGetAll)
-	   mux.Post("/admin/vehicle", AdminVehicleSave)
-	   mux.Get("/admin/vehicle", AdminVehicleGetOne)
-	   mux.Post("/admin/vehicle", AdminVehicleDelete)
-	*/
+	mux.Get("/admin/vehicle", AdminVehicleGetAll)
+	mux.Post("/admin/vehicle", AdminVehicleSave)
+	mux.Get("/admin/vehicle/:id", AdminVehicleGetOne)
+	mux.Post("/admin/vehicle/:id", AdminVehicleDelete)
+
+	mux.Get("/admin/driver/:driverId/document", AdminDriverDocumentGetAll)
+	mux.Post("/admin/driver/:driverId/document", AdminDriverDocumentAdd)
+	mux.Post("/admin/driver/:driverId/document/save", AdminDriverDocumentSave)
+	mux.Post("/admin/driver/:driverId/document/complete", AdminDriverDocumentComplete)
+	mux.Get("/admin/driver/:driverId/document/:documentId", AdminDriverDocumentGetOne)
+	mux.Post("/admin/driver/:driverId/document/:documentId", AdminDriverDocumentDelete)
+
 }

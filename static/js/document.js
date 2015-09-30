@@ -24,13 +24,13 @@ function send(url) {
 $(document).ready(function() {
 
 	$('button#save').click(function() {
-		send('http://localhost:8080/' + slug + '/document/save');
+		send(url + 'save');
 	});
 
 	$('button#complete').click(function() {
 		$('div#invalidMsg').addClass('hide');
 		if (inputTools.validate()) {
-			send('http://localhost:8080/' + slug + '/document/complete');
+			send(url + 'complete');
 		} else {
 			$('div#invalidMsg').removeClass('hide');
 			$('html, body').animate({ scrollTop: 0 }, 'fast');

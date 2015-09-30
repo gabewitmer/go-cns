@@ -11,7 +11,7 @@ import (
 
 // GET driver get document
 func getDocument(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "driver", "/"+c.GetPathVar("slug")) {
+	if !c.CheckAuth(w, r, "/"+c.GetPathVar("slug"), "driver") {
 		return
 	}
 	if c.GetFromSession("slug") != c.GetPathVar("slug") {
@@ -33,7 +33,7 @@ func getDocument(w http.ResponseWriter, r *http.Request, c *web.Context) {
 
 // POSt driver save document
 func saveDocument(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "driver", "/"+c.GetPathVar("slug")) {
+	if !c.CheckAuth(w, r, "/"+c.GetPathVar("slug"), "driver") {
 		return
 	}
 	document := service.FindOneDocument(r.FormValue("id"))
@@ -45,7 +45,7 @@ func saveDocument(w http.ResponseWriter, r *http.Request, c *web.Context) {
 
 // POST driver complate document
 func completeDocument(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "driver", "/"+c.GetPathVar("slug")) {
+	if !c.CheckAuth(w, r, "/"+c.GetPathVar("slug"), "driver") {
 		return
 	}
 	document := service.FindOneDocument(r.FormValue("id"))

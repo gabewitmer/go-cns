@@ -11,7 +11,7 @@
 		<div class="col-lg-12">
 			<ol class="breadcrumb">
 				<li>
-					<a href="/">Home</a>
+					<a href="/admin/home">Home</a>
 				</li>
 				<li>
 					<a href="/admin/company">Companies</a>
@@ -71,33 +71,46 @@
 		</div>
 
 		<div class="col-lg-8">
-			<legend>{{ .company.Name }}'s Vehicles</legend>
-			{{ if .vehicles }}
-				<table id="vehicles" class="table table-bordered table-striped">
-					<thead>
-						<tr>
-							<th>Id</th>
-							<th>Name</th>
-							<th>Type</th>
-						</tr>
-					</thead>
-					<tbody>
-						{{ range $vehicle := .vehicles }}
-							<tr>
-								<td>
-									<a href="/admin/company/{{ $vehicle.CompanyId }}/vehicle/{{ $vehicle.Id }}" class="btn btn-primary btn-xs">{{ $vehicle.Id }}</a>
-								</td>
-								<td>{{ $vehicle.Name }}</td>
-								<td>{{ $vehicle.Type }}</td>
-							</tr>
-						{{ end }}
-					</tbody>
-				</table>
-			{{ else }}
-				<div class="text-center panel-body">
-					No Vehicles
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					{{ .company.Name }}'s Vehicles
 				</div>
-			{{ end }}
+				{{ if .vehicles }}
+					<br>
+					<table id="vehicles" class="table table-bordered table-striped">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Name</th>
+								<th>Type</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{ range $vehicle := .vehicles }}
+								<tr>
+									<td>
+										<a href="/admin/company/{{ $vehicle.CompanyId }}/vehicle/{{ $vehicle.Id }}" class="btn btn-primary btn-xs">{{ $vehicle.Id }}</a>
+									</td>
+									<td>{{ $vehicle.Name }}</td>
+									<td>
+										{{ if eq $vehicle.Type 0 }}
+											Truck
+										{{ else if eq $vehicle.Type 1 }}
+											Trailer
+										{{ else if eq $vehicle.Type 2 }}
+											Bus
+										{{ end }}
+									</td>
+								</tr>
+							{{ end }}
+						</tbody>
+					</table>
+				{{ else }}
+					<div class="text-center panel-body">
+						No Vehicles
+					</div>
+				{{ end }}
+			</div>
 		</div>
 	</div>
 {{ end }}

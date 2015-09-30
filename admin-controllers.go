@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/cagnosolutions/web"
@@ -11,7 +12,7 @@ import (
 
 // GET admin home
 func AdminHome(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
@@ -23,29 +24,43 @@ func AdminHome(w http.ResponseWriter, r *http.Request, c *web.Context) {
 
 // GET admin all employees
 func AdminEmployeeGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
 	ts.Render(w, "admin-employee.tmpl", tmpl.Model{
 		msgK:        msgV,
 		"employees": service.FindAllEmployee(),
+		"users":     service.UserRoles(),
+	})
+	return
+}
+
+// GET admin new employee page
+func AdminEmployeeNew(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "/login", "admin") {
+		return
+	}
+	msgK, msgV := c.GetFlash()
+	ts.Render(w, "admin-employee-form.tmpl", tmpl.Model{
+		msgK:        msgV,
+		"employees": service.FindAllEmployee(),
+		"users":     service.UserRoles(),
 	})
 	return
 }
 
 // POST add employee
 func AdminEmployeeAdd(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin") {
 		return
 	}
-	email := r.FormValue("email")
-	if !service.CanUpdate("", email) {
+	if !service.CanUpdate("", r.FormValue("email")) {
 		c.SetFlash("alertError", "Email already registered")
-		http.Redirect(w, r, "/admin/employee", 303)
+		http.Redirect(w, r, "/admin/employee/new", 303)
 		return
 	}
-
+	r.ParseForm()
 	employee, user := service.NewEmployee(r.Form)
 	service.SaveUser(user)
 	service.SaveEmployee(employee)
@@ -56,17 +71,20 @@ func AdminEmployeeAdd(w http.ResponseWriter, r *http.Request, c *web.Context) {
 
 // POST edit employee
 func AdminEmployeeEdit(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin") {
 		return
 	}
-	email := r.FormValue("email")
-	if !service.CanUpdate(r.FormValue("employeeId"), email) {
+	if !service.CanUpdate(r.FormValue("userId"), r.FormValue("email")) {
 		c.SetFlash("alertError", "Email already registered")
-		http.Redirect(w, r, "/admin/employee", 303)
+		http.Redirect(w, r, "/admin/employee/"+r.FormValue("id"), 303)
 		return
 	}
-	employee := service.MakeEmployee(r.Form)
-	user := service.MakeUser(r.Form)
+	r.ParseForm()
+	employee := service.FindOneEmployee(r.FormValue("id"))
+	util.FormToStruct(&employee, r.Form, "")
+	user := service.FindOneUser(employee.UserId)
+	util.FormToStruct(&user, r.Form, "")
+	user.Id = employee.UserId
 	service.SaveEmployee(employee)
 	service.SaveUser(user)
 	c.SetFlash("alertSuccess", "Successfully saved employee")
@@ -76,21 +94,22 @@ func AdminEmployeeEdit(w http.ResponseWriter, r *http.Request, c *web.Context) {
 
 // GET admin get one employee
 func AdminEmployeeGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
-	ts.Render(w, "admin-employee.tmpl", tmpl.Model{
+	ts.Render(w, "admin-employee-form.tmpl", tmpl.Model{
 		msgK:        msgV,
 		"employees": service.FindAllEmployee(),
 		"employee":  service.FindOneEmployee(c.GetPathVar("id")),
+		"users":     service.UserRoles(),
 	})
 	return
 }
 
 // POST admin delete employee
 func AdminEmployeeDelete(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin") {
 		return
 	}
 	service.DeleteEmployee(c.GetPathVar("id"))
@@ -101,7 +120,7 @@ func AdminEmployeeDelete(w http.ResponseWriter, r *http.Request, c *web.Context)
 
 // GET admin get companies
 func AdminCompanyGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
@@ -114,11 +133,12 @@ func AdminCompanyGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) 
 
 // POST admin add company
 func AdminCompanyAdd(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	r.ParseForm()
-	company := service.MakeCompany(r.Form)
+	var company service.Company
+	util.FormToStruct(&company, r.Form, "")
 	company.Id = util.UUID4()
 	service.SaveCompany(company)
 	c.SetFlash("alertSuccess", "Successfully saved company")
@@ -128,7 +148,7 @@ func AdminCompanyAdd(w http.ResponseWriter, r *http.Request, c *web.Context) {
 
 // POST admin edit company
 func AdminCompanyEdit(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	r.ParseForm()
@@ -140,9 +160,9 @@ func AdminCompanyEdit(w http.ResponseWriter, r *http.Request, c *web.Context) {
 	return
 }
 
-// GET admin add company page
+// GET admin new company page
 func AdminCompanyNew(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
@@ -155,7 +175,7 @@ func AdminCompanyNew(w http.ResponseWriter, r *http.Request, c *web.Context) {
 
 // GET admin get company
 func AdminCompanyGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
@@ -170,7 +190,7 @@ func AdminCompanyGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) 
 
 // POST admin delete company
 func AdminCompanyDelete(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	service.DeleteCompany(c.GetPathVar("id"))
@@ -179,9 +199,9 @@ func AdminCompanyDelete(w http.ResponseWriter, r *http.Request, c *web.Context) 
 	return
 }
 
-// POST  admin upload company logo
+// POST admin upload company logo
 func AdminUploadCompanyLogo(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 
@@ -189,9 +209,9 @@ func AdminUploadCompanyLogo(w http.ResponseWriter, r *http.Request, c *web.Conte
 	return
 }
 
-// GGET admin get all company's drivers
+// GET admin get all company's drivers
 func AdminCompanyDriverGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
@@ -203,8 +223,9 @@ func AdminCompanyDriverGetAll(w http.ResponseWriter, r *http.Request, c *web.Con
 	return
 }
 
+// GET admin get new driver form company page
 func AdminCompanyDriverNew(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
@@ -218,16 +239,15 @@ func AdminCompanyDriverNew(w http.ResponseWriter, r *http.Request, c *web.Contex
 
 // POST admin add driver to company
 func AdminCompanyDriverAdd(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	if !service.CanUpdate("", r.FormValue("email")) {
 		c.SetFlash("alertError", "Email already registered")
-		http.Redirect(w, r, "/admin/company/"+c.GetPathVar("companyId")+"/driver", 303)
+		http.Redirect(w, r, "/admin/company/"+c.GetPathVar("companyId")+"/driver/new", 303)
 		return
 	}
 	r.ParseForm()
-
 	driver, user := service.NewDriver(r.Form)
 	service.SaveDriver(driver)
 	service.SaveUser(user)
@@ -238,18 +258,20 @@ func AdminCompanyDriverAdd(w http.ResponseWriter, r *http.Request, c *web.Contex
 
 // POST admin edit driver
 func AdminCompanyDriverEdit(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
-	if !service.CanUpdate(r.FormValue("driverId"), r.FormValue("email")) {
+	if !service.CanUpdate(r.FormValue("userId"), r.FormValue("email")) {
 		c.SetFlash("alertError", "Email already registered")
-		http.Redirect(w, r, "/admin/company/"+c.GetPathVar("companyId")+"/driver", 303)
+		http.Redirect(w, r, "/admin/company/"+c.GetPathVar("companyId")+"/driver/"+r.FormValue("id"), 303)
 		return
 	}
 	r.ParseForm()
-	driver := service.FindOneDriver(c.GetPathVar("driverId"))
+	driver := service.FindOneDriver(r.FormValue("id"))
 	util.FormToStruct(&driver, r.Form, "")
-	user := service.MakeUser(r.Form)
+	user := service.FindOneUser(driver.UserId)
+	util.FormToStruct(&user, r.Form, "")
+	user.Id = driver.UserId
 	service.SaveDriver(driver)
 	service.SaveUser(user)
 	c.SetFlash("alertSuccess", "Successfully saved driver")
@@ -259,7 +281,7 @@ func AdminCompanyDriverEdit(w http.ResponseWriter, r *http.Request, c *web.Conte
 
 // GET admin get driver from company
 func AdminCompanyDriverGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
@@ -274,7 +296,7 @@ func AdminCompanyDriverGetOne(w http.ResponseWriter, r *http.Request, c *web.Con
 
 /// POST admin delete driver from company
 func AdminCompanyDriverDelete(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	service.DeleteDriver(c.GetPathVar("driverId"))
@@ -285,7 +307,7 @@ func AdminCompanyDriverDelete(w http.ResponseWriter, r *http.Request, c *web.Con
 
 // GET admin get all company's vehicles
 func AdminCompanyVehicleGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
@@ -299,7 +321,7 @@ func AdminCompanyVehicleGetAll(w http.ResponseWriter, r *http.Request, c *web.Co
 
 // POST admin save vehilce to company
 func AdminCompanyVehicleSave(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	r.ParseForm()
@@ -316,7 +338,7 @@ func AdminCompanyVehicleSave(w http.ResponseWriter, r *http.Request, c *web.Cont
 
 // GET admin get new vehicle page
 func AdminCompanyVehicleNew(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
@@ -329,7 +351,7 @@ func AdminCompanyVehicleNew(w http.ResponseWriter, r *http.Request, c *web.Conte
 
 // GET admin get vehicle from company
 func AdminCompanyVehicleGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
@@ -344,7 +366,7 @@ func AdminCompanyVehicleGetOne(w http.ResponseWriter, r *http.Request, c *web.Co
 
 // POST admin delete vehicle from company
 func AdminCompanyVehicleDelete(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	service.DeleteVehicle(c.GetPathVar("vehicleId"))
@@ -355,53 +377,59 @@ func AdminCompanyVehicleDelete(w http.ResponseWriter, r *http.Request, c *web.Co
 
 // GET admin get all drivers
 func AdminDriverGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
 	ts.Render(w, "admin-driver.tmpl", tmpl.Model{
-		msgK:      msgV,
-		"drivers": service.FindAllDriver(),
+		msgK:        msgV,
+		"drivers":   service.FindAllDriver(),
+		"companies": service.CompanyNames(),
 	})
 	return
 }
 
 // POST admin save driver
 func AdminDriverSave(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
-	if !service.CanUpdate("", r.FormValue("email")) {
+	if !service.CanUpdate(r.FormValue("userId"), r.FormValue("email")) {
 		c.SetFlash("alertError", "Email already registered")
 		http.Redirect(w, r, "/admin/driver/"+c.GetPathVar("id"), 303)
 		return
 	}
-	driver := service.MakeDriver(r.Form)
-	user := service.MakeUser(r.Form)
+	r.ParseForm()
+	driver := service.FindOneDriver(r.FormValue("id"))
+	util.FormToStruct(&driver, r.Form, "")
+	user := service.FindOneUser(driver.UserId)
+	util.FormToStruct(&user, r.Form, "")
+	user.Id = driver.UserId
 	service.SaveDriver(driver)
 	service.SaveUser(user)
 	c.SetFlash("alertSuccess", "Successfully saved driver")
-	http.Redirect(w, r, "/admin/driver/"+driver.Id, 303)
+	http.Redirect(w, r, "/admin/driver", 303)
 	return
 }
 
-// GEt admin get driver
+// GET admin get driver
 func AdminDriverGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	msgK, msgV := c.GetFlash()
-	ts.Render(w, "admin-driver.tmpl", tmpl.Model{
-		msgK:      msgV,
-		"driver":  service.FindOneDriver(c.GetPathVar("id")),
-		"drivers": service.FindAllDriver(),
+	ts.Render(w, "admin-driver-form.tmpl", tmpl.Model{
+		msgK:        msgV,
+		"driver":    service.FindOneDriver(c.GetPathVar("id")),
+		"drivers":   service.FindAllDriver(),
+		"companies": service.CompanyNames(),
 	})
 	return
 }
 
 // POST admin delete driver
 func AdminDriverDelete(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "admin", "/login") {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
 		return
 	}
 	service.DeleteDriver(c.GetPathVar("id"))
@@ -410,39 +438,135 @@ func AdminDriverDelete(w http.ResponseWriter, r *http.Request, c *web.Context) {
 	return
 }
 
-/*
 // GET admin get all vehicles
 func AdminVehicleGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
+		return
+	}
 	msgK, msgV := c.GetFlash()
-
 	ts.Render(w, "admin-vehicle.tmpl", tmpl.Model{
-		msgK: msgV,
+		msgK:        msgV,
+		"vehicles":  service.FindAllVehicle(),
+		"companies": service.CompanyNames(),
 	})
 	return
 }
 
 func AdminVehicleSave(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
-
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
+		return
+	}
+	r.ParseForm()
+	vehicle := service.FindOneVehicle(r.FormValue("id"))
+	util.FormToStruct(&vehicle, r.Form, "")
+	service.SaveVehicle(vehicle)
+	c.SetFlash("alertSuccess", "Successfully saved vehicle")
 	http.Redirect(w, r, "/admin/vehicle", 303)
 	return
 }
 
 func AdminVehicleGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
+		return
+	}
 	msgK, msgV := c.GetFlash()
-
-	ts.Render(w, "admin-vehicle.tmpl", tmpl.Model{
-		msgK: msgV,
+	ts.Render(w, "admin-vehicle-form.tmpl", tmpl.Model{
+		msgK:        msgV,
+		"vehicle":   service.FindOneVehicle(c.GetPathVar("id")),
+		"vehicles":  service.FindAllVehicle(),
+		"companies": service.CompanyNames(),
 	})
 	return
 }
 
 func AdminVehicleDelete(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	c.CheckAuth(w, r, "admin", "/login")
-
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
+		return
+	}
+	service.DeleteVehicle(c.GetPathVar("vehicleId"))
+	c.SetFlash("alertSuccess", "Successfuly deleted vehicle")
 	http.Redirect(w, r, "/admin/vehicle", 303)
 	return
 }
-*/
+
+func AdminDriverDocumentGetAll(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
+		return
+	}
+	msgK, msgV := c.GetFlash()
+	ts.Render(w, "admin-driver-document.tmpl", tmpl.Model{
+		msgK:        msgV,
+		"driver":    service.FindOneDriver(c.GetPathVar("driverId")),
+		"documents": service.FindAllDocumentByDriver(c.GetPathVar("driverId")),
+		"dqfs":      service.DQFS,
+	})
+	return
+}
+
+func AdminDriverDocumentAdd(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
+		return
+	}
+	driver := service.FindOneDriver(c.GetPathVar("driverId"))
+	docIds := util.SliceString(r.FormValue("docIds"), ',')
+	for _, id := range docIds {
+		document := service.Document{
+			Id:         util.UUID4(),
+			Name:       "dqf-" + id,
+			DocumentId: id,
+			Complete:   false,
+			CompanyId:  driver.CompanyId,
+			DriverId:   driver.Id,
+		}
+		service.SaveDocument(document)
+	}
+	c.SetFlash("alertSuccess", "Successfully added documents")
+	http.Redirect(w, r, "/admin/driver/"+c.GetPathVar("driverId")+"/document", 303)
+
+}
+
+func AdminDriverDocumentGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
+		return
+	}
+	driver := service.FindOneDriver(c.GetPathVar("driverId"))
+	document := service.FindOneDocument(c.GetPathVar("documentId"))
+	ts.Render(w, document.Name+".tmpl", tmpl.Model{
+		"driver":   driver,
+		"company":  service.FindOneCompany(driver.CompanyId),
+		"document": document,
+		"admin":    true,
+	})
+}
+
+func AdminDriverDocumentSave(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
+		return
+	}
+	document := service.FindOneDocument(r.FormValue("id"))
+	document.Data = r.FormValue("data")
+	service.SaveDocument(document)
+	c.SetFlash("alertSuccess", "Successfully save document")
+	fmt.Fprintf(w, "/admin/driver/%s/document", c.GetPathVar("driverId"))
+}
+
+func AdminDriverDocumentComplete(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
+		return
+	}
+	document := service.FindOneDocument(r.FormValue("id"))
+	document.Data = r.FormValue("data")
+	document.Complete = true
+	service.SaveDocument(document)
+	c.SetFlash("alertSuccess", "Successfully completed document")
+	fmt.Fprintf(w, "/admin/driver/%s/document", c.GetPathVar("driverId"))
+}
+
+func AdminDriverDocumentDelete(w http.ResponseWriter, r *http.Request, c *web.Context) {
+	if !c.CheckAuth(w, r, "/login", "admin", "employee") {
+		return
+	}
+	service.DeleteDocument(c.GetPathVar("documentId"))
+	c.SetFlash("alertSuccess", "Successfully deleted document")
+	http.Redirect(w, r, "/admin/driver/"+c.GetPathVar("driverId")+"/document", 303)
+}

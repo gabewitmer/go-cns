@@ -1,0 +1,159 @@
+
+{{ define "title" }}Employee{{ end }}
+{{ define "navbar" }}
+	{{ template "secure-admin-navbar" . }}
+{{ end }}
+
+{{ define "content" }}
+	<div class="row">
+
+		<!-- BREADCRUMB NAVIGATION -->
+		<div class="col-lg-12">
+			<ol class="breadcrumb">
+				<li>
+					<a href="/admin/home">Home</a>
+				</li>
+				<li>
+					<a href="/admin/employee">Employees</a>
+				</li>
+                {{ if .employee }}
+					<li class="active">
+                        {{ .employee.FirstName }} {{ .employee.LastName }}
+                    </li>
+				{{ else }}
+					<li class="active">New</li>
+				{{ end }}
+			</ol>
+		</div>
+		<!-- BREADCRUMB NAVIGATION -->
+
+		<div class="col-lg-4">
+			<div class="panel panel-default">
+				<div class="panel-heading clearfix">
+					{{ .employee.FirstName }} {{ .employee.LastName }}
+					<a href="/admin/employee" class="btn btn-default btn-xs pull-right">Cancel</a>
+				</div>
+				<div class="panel-body">
+					<form class="form-horizontal" action="/admin/employee/{{ if .employee }}edit{{ else }}add{{ end }}" method="post">
+						<div class="form-group">
+							<label class="control-label col-lg-4">First Name</label>
+							<div class="col-lg-8">
+								<input type="text" name="firstName" class="form-control" value="{{ .employee.FirstName }}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">Last Name</label>
+							<div class="col-lg-8">
+								<input type="text" name="lastName" class="form-control" value="{{ .employee.LastName }}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">Email</label>
+							<div class="col-lg-8">
+								<input type="text" name="email" class="form-control" value="{{ .employee.Email }}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">Street</label>
+							<div class="col-lg-8">
+								<input type="text" name="street" class="form-control" value="{{ .employee.Street }}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">City</label>
+							<div class="col-lg-8">
+								<input type="text" name="city" class="form-control" value="{{ .employee.City }}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">State</label>
+							<div class="col-lg-8">
+								<input type="text" name="state" class="form-control" value="{{ .employee.State }}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">Zip</label>
+							<div class="col-lg-8">
+								<input type="text" name="zip" class="form-control" value="{{ .employee.Zip }}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">Role</label>
+							<div class="col-lg-8">
+								<select class="form-control" name="role">
+									<option {{ if .employee }}{{ if map .users .employee.UserId | eq "employee" }}selected{{ end }}{{ end }} value="employee">Employee</option>
+									<option {{ if .employee }}{{ if map .users .employee.UserId | eq "admin" }}selected{{ end }}{{ end }} value="admin">Admin</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-12">
+							<input type="hidden" name="id" value="{{ .employee.Id }}"/>
+							<input type="hidden" name="userId" value="{{ .employee.UserId }}"/>
+							<div class="form-group">
+								<button class="btn btn-primary btn-block">Save</button>
+							</div>
+							{{ if .employee }}
+								<div class="form-group">
+									<a href="#" data-message="Are you sure you would like to delete this employee?" data-delete="/admin/employee/{{ .employee.Id }}" class="btn btn-danger btn-block delete-button">Delete</a>
+								</div>
+							{{ end }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-8">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					Employees
+				</div>
+
+			{{ if .employees }}
+				<br>
+				<table id="employees" class="table table-striped table-bordered">
+					<thead>
+						<tr>
+							<th>Id</th>
+							<th>First Name</th>
+							<th>Last Name</th>
+							<th>Address</th>
+							<th>Role</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{ $users := .users }}
+						{{ range $employee := .employees }}
+							<tr>
+								<td>
+									<a href="/admin/employee/{{ $employee.Id }}" class="btn btn-primary btn-xs">{{ $employee.Id }}</a>
+								</td>
+								<td>{{ $employee.FirstName }}</td>
+								<td>{{ $employee.LastName }}</td>
+								<td>{{ $employee.Street }} {{ $employee.City }}</td>
+								<td>
+									{{ map $users $employee.UserId | title }}
+								</td>
+							</tr>
+						{{ end }}
+					</tbody>
+				</table>
+			{{ else }}
+				<div class="text-center panel-body">
+					No Employees
+				</div>
+			{{ end }}
+			</div>
+		</div>
+	</div>
+{{ end }}
+
+{{ define "scripts" }}
+	<script src="/static/js/password.js"></script>
+	<script src="/static/js/delete.js"></script>
+	<script>
+		$(document).ready(function() {
+    	$('#employees').DataTable();
+		} );
+	</script>
+{{ end }}

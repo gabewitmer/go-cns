@@ -2,6 +2,7 @@ package service
 
 import (
 	"net/url"
+	"strconv"
 
 	"github.com/cagnosolutions/web/util"
 )
@@ -22,7 +23,7 @@ func FindAllEmployee() []Employee {
 	var employees []Employee
 	for _, v := range *db.GetStore("employee") {
 		var employee Employee
-		Morph(v, employee)
+		Morph(v, &employee)
 		employees = append(employees, employee)
 	}
 	return employees
@@ -49,9 +50,9 @@ func SaveEmployee(employee Employee) {
 }
 
 func DeleteEmployee(id string) {
-	var e Employee
-	db.GetAs("employee", id, &e)
-	db.Del("user", e.UserId)
+	var employee Employee
+	db.GetAs("employee", id, &employee)
+	db.Del("user", employee.UserId)
 	db.Del("employee", id)
 }
 
@@ -74,10 +75,12 @@ func NewEmployee(dat url.Values) (Employee, User) {
 		Id:       util.UUID4(),
 		Email:    dat.Get("email"),
 		Password: dat.Get("email"),
-		Role:     "driver",
-		Active:   true,
+		Role:     dat.Get("role"),
 	}
-	employee := MakeEmployee(dat)
+	a, _ := strconv.ParseBool(dat.Get("active"))
+	user.Active = a
+	var employee Employee
+	util.FormToStruct(&employee, dat, "")
 	employee.Id = util.UUID4()
 	employee.UserId = user.Id
 	return employee, user

@@ -49,9 +49,17 @@ func MakeUser(dat url.Values) User {
 	return user
 }
 
+func UserRoles() map[string]string {
+	m := make(map[string]string)
+	for _, v := range *db.GetStore("user") {
+		m[v.(map[string]interface{})["Id"].(string)] = v.(map[string]interface{})["Role"].(string)
+	}
+	return m
+}
+
 func CanUpdate(id, email string) bool {
 	var users []User
-	n, _ :=db.QueryAll("user", map[string]interface{}{"id": id, "email":email}, users)
+	n, _ := db.QueryAll("user", map[string]interface{}{"Email": email}, &users)
 	switch n {
 	case 0:
 		return true

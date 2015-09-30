@@ -15,6 +15,21 @@ type Document struct {
 	DriverId   string
 }
 
+var DQFS = [][]string{
+	[]string{"100", "Driver's Application"},
+	[]string{"180", "Certification of Violations"},
+	[]string{"200", "Annual Inquery & Review"},
+	[]string{"250", "Road Test Certication"},
+	[]string{"300", "Previous Driver Inquires"},
+	[]string{"400", "Drug & Alcohol Records Request"},
+	[]string{"450", "Drug & Alcohol Certified Receipt"},
+	[]string{"500", "Certification Compliance"},
+	[]string{"600", "Confictions for a Driver Violation"},
+	[]string{"700", "New Hire Stmt On Duty Hours"},
+	[]string{"750", "Other Ompensated Work"},
+	[]string{"775", "Fair Credit Reporting Act"},
+}
+
 func FindAllDocument() []Document {
 	var documents []Document
 	for _, v := range *db.GetStore("document") {
@@ -26,6 +41,12 @@ func FindAllDocument() []Document {
 }
 
 func FindAllDocumentByDriver(driverId string) []Document {
+	var documents []Document
+	db.QueryAll("document", map[string]interface{}{"DriverId": driverId}, &documents)
+	return documents
+}
+
+func FindAllIncompleteDocumentByDriver(driverId string) []Document {
 	var documents []Document
 	db.QueryAll("document", map[string]interface{}{"DriverId": driverId, "Complete": false}, &documents)
 	return documents

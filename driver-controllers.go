@@ -9,7 +9,7 @@ import (
 )
 
 func getDriverHome(w http.ResponseWriter, r *http.Request, c *web.Context) {
-	if !c.CheckAuth(w, r, "driver", "/"+c.GetPathVar("slug")) {
+	if !c.CheckAuth(w, r, "/"+c.GetPathVar("slug"), "driver") {
 		return
 	}
 	if c.GetFromSession("slug") != c.GetPathVar("slug") {
@@ -20,7 +20,7 @@ func getDriverHome(w http.ResponseWriter, r *http.Request, c *web.Context) {
 		msgK:        msgV,
 		"driver":    service.FindOneDriver(c.GetFromSession("id").(string)),
 		"slug":      c.GetPathVar("slug"),
-		"documents": service.FindAllDocumentByDriver(c.GetFromSession("id").(string)),
+		"documents": service.FindAllIncompleteDocumentByDriver(c.GetFromSession("id").(string)),
 	})
 	return
 }

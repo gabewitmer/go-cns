@@ -18,7 +18,7 @@ func FindAllVehicle() []Vehicle {
 	var vehicles []Vehicle
 	for _, v := range *db.GetStore("vehicle") {
 		var vehicle Vehicle
-		Morph(v, vehicle)
+		Morph(v, &vehicle)
 		vehicles = append(vehicles, vehicle)
 	}
 	return vehicles

@@ -1,0 +1,131 @@
+{{ define "title" }}Driver Documents{{ end }}
+{{ define "navbar" }}
+	{{ template "secure-admin-navbar" . }}
+{{ end }}
+{{ define "content" }}
+	<div class="row">
+		<!-- BREADCRUMB NAVIGATION -->
+		<div class="col-lg-12">
+			<ol class="breadcrumb">
+				<li>
+					<a href="/">Home</a>
+				</li>
+				<li>
+					<a href="/admin/driver">Drivers</a>
+				</li>
+				<li><a href="/admin/driver/{{ .driver.Id }}">{{ .driver.FirstName }} {{ .driver.LastName }}</a></li>
+				<li class="active">Documents</li>
+
+			</ol>
+		</div>
+		<!-- BREADCRUMB NAVIGATION -->
+
+		<div class="col-lg-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">Add Documents</div>
+				<div id="documents" class="list-group">
+					{{ range $dqf := .dqfs }}
+						<div style="margin:7px;">
+							<div class="col-xs-11">
+								<p class="list-group-item-text">DQF{{ index $dqf 0 }} - {{ index $dqf 1 }}</p>
+							</div>
+							<button id="addDoc" data-added="0" data-docId="{{ index $dqf 0 }}" class="btn-default btn btn-xs">
+								<i class="fa fa-check"></i>
+							</button>
+						</div>
+					{{ end }}
+					<div class="list-group-item">
+						<form id="documentForm" class="test-center" role="form" method="post" action="/admin/driver/{{ .driver.Id }}/document">
+							<input type="hidden"  id="docIds" name="docIds">
+							<button id="done" class="btn btn-md btn-primary btn-block" type="submit" disabled="disabled">
+								Please Select Documents
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-8">
+			<div class="panel panel-default">
+				<div class="panel-heading">{{ .driver.FirstName }} {{ .driver.LastName }}'s Documents</div>
+				{{ if .documents }}
+					<div class="table-responsive">
+						<table id="documents" class="table table-striped table-bordered">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>DQF</th>
+									<th>Complete</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								{{ range $document := .documents }}
+									<tr>
+										<td><a href="/admin/driver/{{ $document.DriverId }}/document/{{ $document.Id }}" class="btn btn-primary btn-xs">{{ $document.Id }}</a></td>
+										<td>
+											{{ $document.DocumentId }}
+										</td>
+										<td>
+											{{ $document.Complete | printf "%v" | title }}
+										</td>
+										<td>
+											<a href="#" class="btn btn-danger btn-xs delete-button"
+											   data-delete="/admin/driver/{{ $document.DriverId }}/document/{{ $document.Id }}"
+											   data-message="Are you sure you would like to delete this document?">
+												Delete
+											</a>
+										</td>
+									</tr>
+								{{ end }}
+							</tbody>
+						</table>
+					</div>
+				{{ else }}
+					<div class="text-center panel-body">
+						No Documents
+					</div>
+				{{ end }}
+			</div>
+		</div>
+	</div>
+{{ end }}
+
+{{ define "scripts" }}
+	<script src="/static/js/delete.js"></script>
+
+	<script>
+		var docId = [];
+		$(document).ready(function() {
+			$('button[id="addDoc"]').click(function() {
+				if (this.getAttribute('data-added') == '0') {
+					docId.push(this.getAttribute('data-docId'));
+					this.setAttribute('class', 'btn-success btn btn-xs');
+					this.setAttribute('data-added', '1');
+					$('button[id="done"]').removeAttr('disabled');
+					$('button[id="done"]')[0].innerText = "Add Documents To Driver";
+				} else {
+					docId = removeValue(docId, this.getAttribute('data-docId'));
+					this.setAttribute('class', 'btn-default btn btn-xs');
+					this.setAttribute('data-added', '0');
+					if(docId.length < 1) {
+						$('button[id="done"]').attr('disabled', 'disabled');
+						$('button[id="done"]')[0].innerText = "Please Select Documents";
+					}
+				}
+			});
+			$('button[id="done"]').click(function(e){
+				e.preventDefault();
+				$('input[id="docIds"]').val(docId);
+				$('form[id="documentForm"]').submit();
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function() {
+    		$('#documents').DataTable();
+		});
+	</script>
+{{ end }}

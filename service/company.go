@@ -67,6 +67,14 @@ func GetDriverCount(companyId string) int {
 	return len(FindAllDriverByCompany(companyId))
 }
 
+func CompanyNames() map[string]string {
+	m := make(map[string]string)
+	for _, c := range *db.GetStore("company") {
+		m[c.(map[string]interface{})["Id"].(string)] = c.(map[string]interface{})["Name"].(string)
+	}
+	return m
+}
+
 func MakeCompany(dat url.Values) Company {
 	company := Company{
 		Id:     dat.Get("companyId"),

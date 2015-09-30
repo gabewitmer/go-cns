@@ -11,7 +11,7 @@
 		<div class="col-lg-12">
 			<ol class="breadcrumb">
 				<li>
-					<a href="/">Home</a>
+					<a href="/admin/home">Home</a>
 				</li>
 				<li class="active">
 					Drivers
@@ -21,47 +21,61 @@
 		<!-- BREADCRUMB NAVIGATION -->
 
 		<div class="col-lg-12">
-			<legend>All Drivers</legend>
-			<!--<div class="panel panel-default">-->
-				<!--<div class="panel-heading">Drivers</div>-->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					All Drivers
+				</div>
 				{{ if .drivers }}
-					<!--<div class="table-responsive">-->
-						<table id="drivers" class="table table-striped table-bordered">
-							<thead>
+					<br>
+					<table id="drivers" class="table table-striped table-bordered">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>First Name</th>
+								<th>Last Name</th>
+								<th>Status</th>
+								<th>Company</th>
+								<th>Address</th>
+								<th>Manage Documents</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{ $companies := .companies }}
+							{{ range $driver := .drivers }}
 								<tr>
-									<th>Id</th>
-									<th>First Name</th>
-									<th>Last Name</th>
-									<th>Company</th>
-									<th>Address</th>
-									<th>Manage Documents</th>
+									<td><a href="/admin/driver/{{ $driver.Id }}" class="btn btn-primary btn-xs">{{ $driver.Id }}</a></td>
+									<td>{{ $driver.FirstName }}</td>
+									<td>{{ $driver.LastName }}</td>
+									<td>
+										{{ if eq $driver.Status 0 }}
+											Unqualified
+										{{ else if eq $driver.Status 1 }}
+											Pending
+										{{ else if eq $driver.Status 2 }}
+											Denied
+										{{ else if eq $driver.Status 3 }}
+											Active
+										{{ else if eq $driver.Status 4 }}
+											Suspended
+										{{ end }}
+									</td>
+									<td><a href="/admin/company/{{ $driver.CompanyId }}">{{ map $companies $driver.CompanyId }}</a></td>
+									<td>{{ $driver.Street }} {{ $driver.City }}</td>
+									<td class="text-center">
+										<div class="btn-group btn-group-xs">
+											<a href="/admin/driver/{{ $driver.Id }}/document" class="btn btn-default">Manage Documents</a>
+										</div>
+									</td>
 								</tr>
-							</thead>
-							<tbody>
-								{{ $companies := .companies }}
-								{{ range $driver := .drivers }}
-									<tr>
-										<td><a href="/admin/driver/{{ $driver.Id }}" class="btn btn-primary btn-xs">{{ $driver.Id }}</a></td>
-										<td>{{ $driver.FirstName }}</td>
-										<td>{{ $driver.LastName }}</td>
-										<td><a href="/admin/company/{{ $driver.CompanyId }}">{{ $companies[$driver.CompanyId].Name }}</a></td>
-										<td>{{ $driver.Street }} {{ $driver.City }}</td>
-										<td class="text-center">
-											<div class="btn-group btn-group-xs">
-												<a href="/admin/driver/{{ $driver.Id }}/document" class="btn btn-default">Manage Documents</a>
-											</div>
-										</td>
-									</tr>
-								{{ end }}
-							</tbody>
-						</table>
-					<!--</div>-->
+							{{ end }}
+						</tbody>
+					</table>
 				{{ else }}
 					<div class="text-center panel-body">
 						No Drivers
 					</div>
 				{{ end }}
-			<!--</div>-->
+			</div>
 		</div>
 	</div>
 {{ end }}
