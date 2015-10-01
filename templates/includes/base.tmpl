@@ -20,11 +20,15 @@
 		<title>{{ template "title" . }}</title>
 	</head>
 	<body>
-		<div style="background-color:red;" class="text-center">
-			<span class="lead">
-				Under Active development
-			</span>
-		</div>
+		{{ if not .comment }}
+			<div style="background-color:red;" class="text-center">
+				<span class="lead">
+					Under Active development
+				</span>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				Comments, notes or suggestions for this page. <a id="comment" href="/comment?return=">Click Here</a>
+			</div>
+		{{ end }}
         {{ template "navbar" . }}
 
 		<div class="container-fluid">
@@ -66,6 +70,12 @@
 			<script src="//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
 			<script src="/static/js/data-table-bootstrap.js"></script>
 			<script src="/static/js/main.js"></script>
+			<script type="text/javascript">
+				$(document).ready(function() {
+					href = $('#comment').attr('href') + window.location.pathname + '&name=' + document.title;
+					$('#comment').attr('href', href);
+				});
+			</script>
 			{{ template "scripts" . }}
 		</div>
 	</body>

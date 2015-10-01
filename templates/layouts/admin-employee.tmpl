@@ -1,5 +1,5 @@
 
-{{ define "title" }}Employee{{ end }}
+{{ define "title" }}Admin Employee{{ end }}
 {{ define "navbar" }}
 	{{ template "secure-admin-navbar" . }}
 {{ end }}
@@ -33,7 +33,7 @@
 					<table id="employees" class="table table-striped table-bordered">
 						<thead>
 							<tr>
-								<th>Id</th>
+								<th></th>
 								<th>First Name</th>
 								<th>Last Name</th>
 								<th>Address</th>
@@ -45,7 +45,7 @@
 							{{ range $employee := .employees }}
 								<tr>
 									<td>
-										<a href="/admin/employee/{{ $employee.Id }}" class="btn btn-primary btn-xs">{{ $employee.Id }}</a>
+										<a href="/admin/employee/{{ $employee.Id }}" class="btn btn-primary btn-xs">Edit</a>
 									</td>
 									<td>{{ $employee.FirstName }}</td>
 									<td>{{ $employee.LastName }}</td>

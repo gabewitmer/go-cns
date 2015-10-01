@@ -1,0 +1,30 @@
+{{ define "dqf-navbar" }}
+    {{ if .admin }}
+        {{ template "secure-admin-navbar" . }}
+    {{ end }}
+{{ end }}
+
+{{ define "dqf-msg" }}
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="invalidMsg" class="hide alert alert-danger alert-dismissable">
+	            INVALID: Document is not filled out completely.
+            </div>
+        </div>
+    </div>
+{{ end }}
+
+{{ define "dqf-scripts" }}
+    <script src="/static/js/input-tools.js"></script>
+    <script src="/static/js/document.js"></script>
+    <script>
+        {{ if .admin }}
+            var url = '{{ template "url" . }}/admin/driver/{{ .driver.Id }}/document/';
+        {{ else }}
+            var url = '{{ template "url" . }}/{{ .company.Slug }}/document/';
+        {{ end }}
+        var id = '{{ .document.Id }}';
+        var slug = '{{ .company.Slug }}';
+        var data = '{{ .document.Data }}';
+    </script>
+{{ end }}

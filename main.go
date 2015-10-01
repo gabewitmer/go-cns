@@ -15,6 +15,9 @@ func main() {
 	mux.Post("/login", postLogin)
 	mux.Get("/logout", getLogout)
 
+	mux.Get("/comment", GetComment)
+	mux.Post("/comment", PostComment)
+	DeveloperRoutes(mux)
 	AdminRoutes(mux)
 	CompanyRoutes(mux)
 

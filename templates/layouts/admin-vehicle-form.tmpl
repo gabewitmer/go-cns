@@ -1,5 +1,5 @@
 
-{{ define "title" }}Admin Vehicle{{ end }}
+{{ define "title" }}Admin Vehicle Edit{{ end }}
 {{ define "navbar" }}
 	{{ template "secure-admin-navbar" . }}
 {{ end }}
@@ -71,7 +71,7 @@
 					<table id="vehicles" class="table table-striped table-bordered">
 						<thead>
 							<tr>
-								<th>Id</th>
+								<th></th>
 								<th>Name</th>
 								<th>Type</th>
 								<th>Company</th>
@@ -81,7 +81,7 @@
 							{{ $companies := .companies }}
 							{{ range $vehicle := .vehicles }}
 								<tr>
-									<td><a href="/admin/vehicle/{{ $vehicle.Id }}" class="btn btn-primary btn-xs">{{ $vehicle.Id }}</a></td>
+									<td><a href="/admin/vehicle/{{ $vehicle.Id }}" class="btn btn-primary btn-xs">Edit</a></td>
 									<td>{{ $vehicle.Name }}</td>
 									<td>
 										{{ if eq $vehicle.Type 0 }}

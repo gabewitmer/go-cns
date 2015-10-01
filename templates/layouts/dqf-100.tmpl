@@ -1,17 +1,12 @@
 {{ define "title" }}DQF 100{{ end }}
 
-	{{ define "navbar" }}
-{{ if .admin }}
-		{{ template "secure-admin-navbar" . }}
+{{ define "navbar" }}
+	{{ template "dqf-navbar" . }}
 {{ end }}
-	{{ end }}
 
 {{ define "content" }}
 
-<br/><br/>
-<div id="invalidMsg" class="hide alert alert-danger alert-dismissable">
-	INVALID: Document is not filled out completely.
-</div>
+{{ template "dqf-msg" . }}
 
 <div class="col-lg-12 text-center"><h1>DRIVER'S APPLICATION FOR EMPLOYMENT | DQF 100</h1></div>
 <div class="col-lg-12">
@@ -654,17 +649,5 @@
 <br/><br/>
 {{ end }}
 {{ define "scripts" }}
-<script src="/static/js/input-tools.js"></script>
-<script src="/static/js/document.js"></script>
-<script>
-	{{ if .admin }}
-		var url = '{{ template "url" }}/admin/driver/{{ .driver.Id }}/document/'
-	{{ else }}
-		var url = '{{ template "url" }}/{{ .company.Slug }}/document/'
-	{{ end }}
-	var id = '{{ .document.Id }}';
-	var slug = '{{ .company.Slug }}';
-	var data = '{{ .document.Data }}';
-
-</script>
+	{{ template "dqf-scripts" . }}
 {{ end }}

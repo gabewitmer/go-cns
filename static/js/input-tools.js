@@ -245,14 +245,14 @@ InputTools.prototype = {
         var inputs = inputTools.getParent(elem).querySelectorAll(this.inputTypes.join(', '));
         for (var i = 0; i < inputs.length; i++) {
             if (elem.checked) {
-                inputs[i].required = true;
+                inputs[i].required = elem.classList.contains("required");
             } else {
-                inputs[i].required = false;
+                inputs[i].required = !elem.classList.contains("required");
             }
         }
     },
     requiredClicks: function () {
-        var checkboxes = document.querySelectorAll('input[type="checkbox"].required');
+        var checkboxes = document.querySelectorAll('input[type="checkbox"].required, input[type="checkbox"].invertRequired');
         for (var i = 0; i < checkboxes.length; i++) {
             this.requiredClick(checkboxes[i]);
         }
