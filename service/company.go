@@ -1,10 +1,26 @@
 package service
 
 import (
-	"net/url"
-	"strconv"
+	"sort"
 	"strings"
 )
+
+type Companies []Company
+
+func (c Companies) Len() int {
+	return len(c)
+}
+
+func (c Companies) Less(i, j int) bool {
+	return c[i].Id < c[j].Id
+}
+
+func (c Companies) Swap(i, j int) {
+	ie := c[i]
+	je := c[j]
+	c[i] = je
+	c[j] = ie
+}
 
 type Company struct {
 	Id             string
@@ -20,19 +36,20 @@ type Company struct {
 	UserId         string
 }
 
-func (c * Company) GenerateSlug() {
+func (c *Company) GenerateSlug() {
 	// TODO: add better sanitization
 	c.Slug = strings.ToLower(strings.Replace(c.Name, " ", "-", -1))
 }
 
-func FindAllCompany() []Company {
-	var companys []Company
+func FindAllCompany() Companies {
+	var companies Companies
 	for _, c := range *db.GetStore("company") {
 		var company Company
 		Morph(c, &company)
-		companys = append(companys, company)
+		companies = append(companies, company)
 	}
-	return companys
+	sort.Stable(sort.Reverse(companies))
+	return companies
 }
 
 func FindOneCompany(id string) Company {
@@ -75,7 +92,7 @@ func CompanyNames() map[string]string {
 	return m
 }
 
-func MakeCompany(dat url.Values) Company {
+/*func MakeCompany(dat url.Values) Company {
 	company := Company{
 		Id:     dat.Get("companyId"),
 		Name:   dat.Get("name"),
@@ -93,4 +110,4 @@ func MakeCompany(dat url.Values) Company {
 	company.Feature = f
 	company.AgeRequirement = int32(a)
 	return company
-}
+}*/

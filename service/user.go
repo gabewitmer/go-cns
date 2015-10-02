@@ -1,9 +1,6 @@
 package service
 
-import (
-	"net/url"
-	"strconv"
-)
+import "sort"
 
 type User struct {
 	Id       string
@@ -13,13 +10,31 @@ type User struct {
 	Active   bool
 }
 
-func FindAllUser() []User {
-	var users []User
+type Users []User
+
+func (u Users) Len() int {
+	return len(u)
+}
+
+func (u Users) Less(i, j int) bool {
+	return u[i].Id < u[j].Id
+}
+
+func (u Users) Swap(i, j int) {
+	ie := u[i]
+	je := u[j]
+	u[i] = je
+	u[j] = ie
+}
+
+func FindAllUser() Users {
+	var users Users
 	for _, v := range *db.GetStore("user") {
 		var user User
-		Morph(v, user)
+		Morph(v, &user)
 		users = append(users, user)
 	}
+	sort.Stable(sort.Reverse(users))
 	return users
 }
 
@@ -37,7 +52,7 @@ func DeleteUser(id string) {
 	db.Del("user", id)
 }
 
-func MakeUser(dat url.Values) User {
+/*func MakeUser(dat url.Values) User {
 	user := User{
 		Id:       dat.Get("userId"),
 		Email:    dat.Get("email"),
@@ -47,7 +62,7 @@ func MakeUser(dat url.Values) User {
 	a, _ := strconv.ParseBool(dat.Get("active"))
 	user.Active = a
 	return user
-}
+}*/
 
 func UserRoles() map[string]string {
 	m := make(map[string]string)

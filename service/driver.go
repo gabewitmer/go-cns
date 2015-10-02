@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"sort"
 	"time"
 
 	"github.com/cagnosolutions/web/util"
@@ -24,13 +25,31 @@ type Driver struct {
 	CompanyId string
 }
 
-func FindAllDriver() []Driver {
-	var drivers []Driver
+type Drivers []Driver
+
+func (d Drivers) Len() int {
+	return len(d)
+}
+
+func (d Drivers) Less(i, j int) bool {
+	return d[i].Id < d[j].Id
+}
+
+func (d Drivers) Swap(i, j int) {
+	ie := d[i]
+	je := d[j]
+	d[i] = je
+	d[j] = ie
+}
+
+func FindAllDriver() Drivers {
+	var drivers Drivers
 	for _, v := range *db.GetStore("driver") {
 		var driver Driver
 		Morph(v, &driver)
 		drivers = append(drivers, driver)
 	}
+	sort.Stable(sort.Reverse(drivers))
 	return drivers
 }
 
@@ -62,26 +81,24 @@ func DeleteDriver(id string) {
 	db.Del("driver", id)
 }
 
-func MakeDriver(dat url.Values) Driver {
-	//driver := Driver{
-	//	Id:        dat.Get("driverId"),
-	//	FirstName: dat.Get("firstName"),
-	//	LastName:  dat.Get("lastName"),
-	//	Street:    dat.Get("street"),
-	//	City:      dat.Get("city"),
-	//	State:     dat.Get("state"),
-	//	Zip:       dat.Get("zip"),
-	//	Email:     dat.Get("email"),
-	//	DOB:       formatDate(dat.Get("dob")),
-	//	UserId:    dat.Get("userId"),
-	//	CompanyId: dat.Get("companyId"),
-	//}
-	//s, _ := strconv.Atoi(dat.Get("status"))
-	//driver.Status = int8(s)
-	var driver Driver
-	util.FormToStruct(&driver, dat, "")
+/*func MakeDriver(dat url.Values) Driver {
+	driver := Driver{
+		Id:        dat.Get("driverId"),
+		FirstName: dat.Get("firstName"),
+		LastName:  dat.Get("lastName"),
+		Street:    dat.Get("street"),
+		City:      dat.Get("city"),
+		State:     dat.Get("state"),
+		Zip:       dat.Get("zip"),
+		Email:     dat.Get("email"),
+		DOB:       formatDate(dat.Get("dob")),
+		UserId:    dat.Get("userId"),
+		CompanyId: dat.Get("companyId"),
+	}
+	s, _ := strconv.Atoi(dat.Get("status"))
+	driver.Status = int8(s)
 	return driver
-}
+}*/
 
 func NewDriver(dat url.Values) (Driver, User) {
 	user := User{

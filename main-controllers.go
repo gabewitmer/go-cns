@@ -84,11 +84,11 @@ func GetComment(w http.ResponseWriter, r *http.Request, c *web.Context) {
 
 func PostComment(w http.ResponseWriter, r *http.Request, c *web.Context) {
 	comment := service.Comment{
-		Id:     util.UUID4(),
-		Com:    r.FormValue("comment"),
-		Url:    r.FormValue("return"),
-		Name:   r.FormValue("name"),
-		Closed: false,
+		Id:      util.UUID4(),
+		Com:     r.FormValue("comment"),
+		Url:     r.FormValue("return"),
+		Name:    r.FormValue("name"),
+		Closed:  false,
 	}
 	service.SaveComment(comment)
 	c.SetFlash("alertSuccess", "Successfully save your comment")

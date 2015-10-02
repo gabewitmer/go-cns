@@ -1,11 +1,6 @@
 package service
 
-import (
-	"net/url"
-	"strconv"
-
-	"github.com/cagnosolutions/web/util"
-)
+import "sort"
 
 type Vehicle struct {
 	Id        string
@@ -14,13 +9,31 @@ type Vehicle struct {
 	CompanyId string
 }
 
-func FindAllVehicle() []Vehicle {
-	var vehicles []Vehicle
+type Vehicles []Vehicle
+
+func (v Vehicles) Len() int {
+	return len(v)
+}
+
+func (v Vehicles) Less(i, j int) bool {
+	return v[i].Id < v[j].Id
+}
+
+func (v Vehicles) Swap(i, j int) {
+	ie := v[i]
+	je := v[j]
+	v[i] = je
+	v[j] = ie
+}
+
+func FindAllVehicle() Vehicles {
+	var vehicles Vehicles
 	for _, v := range *db.GetStore("vehicle") {
 		var vehicle Vehicle
 		Morph(v, &vehicle)
 		vehicles = append(vehicles, vehicle)
 	}
+	sort.Stable(sort.Reverse(vehicles))
 	return vehicles
 }
 
@@ -44,7 +57,7 @@ func FindAllVehicleByCompany(companyId string) []Vehicle {
 	return vehicles
 }
 
-func MakeVehicle(dat url.Values) Vehicle {
+/*func MakeVehicle(dat url.Values) Vehicle {
 	vehicle := Vehicle{
 		Id:        dat.Get("vehicleId"),
 		Name:      dat.Get("name"),
@@ -56,4 +69,4 @@ func MakeVehicle(dat url.Values) Vehicle {
 		vehicle.Id = util.UUID4()
 	}
 	return vehicle
-}
+}*/

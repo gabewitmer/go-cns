@@ -2,6 +2,7 @@ package service
 
 import (
 	"net/url"
+	"sort"
 	"strconv"
 
 	"github.com/cagnosolutions/web/util"
@@ -19,13 +20,31 @@ type Employee struct {
 	UserId    string
 }
 
-func FindAllEmployee() []Employee {
-	var employees []Employee
+type Employees []Employee
+
+func (e Employees) Len() int {
+	return len(e)
+}
+
+func (e Employees) Less(i, j int) bool {
+	return e[i].Id < e[j].Id
+}
+
+func (e Employees) Swap(i, j int) {
+	ie := e[i]
+	je := e[j]
+	e[i] = je
+	e[j] = ie
+}
+
+func FindAllEmployee() Employees {
+	var employees Employees
 	for _, v := range *db.GetStore("employee") {
 		var employee Employee
 		Morph(v, &employee)
 		employees = append(employees, employee)
 	}
+	sort.Stable(sort.Reverse(employees))
 	return employees
 }
 
@@ -56,7 +75,7 @@ func DeleteEmployee(id string) {
 	db.Del("employee", id)
 }
 
-func MakeEmployee(dat url.Values) Employee {
+/*func MakeEmployee(dat url.Values) Employee {
 	return Employee{
 		Id:        dat.Get("employeeId"),
 		FirstName: dat.Get("firstName"),
@@ -68,7 +87,7 @@ func MakeEmployee(dat url.Values) Employee {
 		Email:     dat.Get("email"),
 		UserId:    dat.Get("userId"),
 	}
-}
+}*/
 
 func NewEmployee(dat url.Values) (Employee, User) {
 	user := User{

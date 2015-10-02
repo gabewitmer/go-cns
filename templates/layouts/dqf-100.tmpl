@@ -144,7 +144,7 @@
 					<div class="row">
 						<label class="col-lg-2">DATE OF BIRTH</label>
 						<div class="col-lg-2">
-							<input type="text" name="applicant-date-of-birth" class="form-control input-sm" value="{{ .driver.DOB }}" required>
+							<input type="text" name="applicant-date-of-birth" class="form-control input-sm" value="{{ .driver.DOB | date }}" required>
 						</div>
 						<label class="col-lg-2">TELEPHONE</label>
 						<div class="col-lg-2">
@@ -638,15 +638,7 @@
 		</div>
 	</div>
 </div>
-<div class="row">
-	<div class="col-lg-1 col-lg-offset-9">
-		<button type="button" name="button" id="save" >Save</button>
-	</div>
-	<div class="col-lg-1">
-		<button type="button" name="button" id="complete" >Complete</button>
-	</div>
-</div>
-<br/><br/>
+{{ template "dqf-buttons" . }}
 {{ end }}
 {{ define "scripts" }}
 	{{ template "dqf-scripts" . }}

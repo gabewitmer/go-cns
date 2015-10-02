@@ -1,9 +1,23 @@
 package service
 
-import (
-	"net/url"
-	"strconv"
-)
+import "sort"
+
+type Documents []Document
+
+func (d Documents) Len() int {
+	return len(d)
+}
+
+func (d Documents) Less(i, j int) bool {
+	return d[i].Id < d[j].Id
+}
+
+func (d Documents) Swap(i, j int) {
+	ie := d[i]
+	je := d[j]
+	d[i] = je
+	d[j] = ie
+}
 
 type Document struct {
 	Id         string
@@ -30,13 +44,14 @@ var DQFS = [][]string{
 	[]string{"775", "Fair Credit Reporting Act"},
 }
 
-func FindAllDocument() []Document {
-	var documents []Document
+func FindAllDocument() Documents {
+	var documents Documents
 	for _, v := range *db.GetStore("document") {
 		var document Document
-		Morph(v, document)
+		Morph(v, &document)
 		documents = append(documents, document)
 	}
+	sort.Stable(sort.Reverse(documents))
 	return documents
 }
 
@@ -66,7 +81,7 @@ func DeleteDocument(id string) {
 	db.Del("document", id)
 }
 
-func MakeDocument(dat url.Values) Document {
+/*func MakeDocument(dat url.Values) Document {
 	document := Document{
 		Id:         dat.Get("documentId"),
 		Name:       dat.Get("name"),
@@ -78,4 +93,4 @@ func MakeDocument(dat url.Values) Document {
 	c, _ := strconv.ParseBool(dat.Get("complete"))
 	document.Complete = c
 	return document
-}
+}*/

@@ -23,15 +23,14 @@
 		</div>
 		<!-- BREADCRUMB NAVIGATION -->
 
-		<div class="col-lg-4">
+		<div class="col-lg-5">
 			<div class="panel panel-default">
 				<div class="panel-heading clearfix">
-					Driver
-					<a href="/admin/driver" class="btn btn-default btn-sm pull-right">Cancel</a>
+					{{ .driver.FirstName }} {{ .driver.LastName }}
+					<a href="/admin/driver" class="btn btn-default btn-xs pull-right">Cancel</a>
 				</div>
 				<div class="panel-body">
 					<form class="form-horizontal" action="/admin/driver" method="post">
-
 						<div class="form-group">
 							<label class="control-label col-lg-4">First Name</label>
 							<div class="col-lg-8">
@@ -42,6 +41,12 @@
 							<label class="control-label col-lg-4">Last Name</label>
 							<div class="col-lg-8">
 								<input type="text" name="lastName" class="form-control" value="{{ .driver.LastName }}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">Date Of Birth</label>
+							<div class="col-lg-8">
+								<input type="date" name="dOB" class="form-control" value="{{ .driver.DOB }}"/>
 							</div>
 						</div>
 						<div class="form-group">
@@ -86,40 +91,54 @@
 								</select>
 							</div>
 						</div>
-						<div class="text-center">
-							<a data-toggle="collapse" data-parent="#accordion"
-							   href="#changePassword" class="text-primary">
-								Click to change password
-							</a>
-						</div>
-						<br/>
-						<div id="changePassword" class="panel-collapse collapse">
-							<!-- toggle show password input -->
-							<div class="form-group">
-								<label class="control-label col-lg-4">Password</label>
-								<div class="col-lg-8">
-									<div class="input-group">
-										<input type="password" id="toggle-pass" name="password" class="form-control"/>
-										<span class="input-group-btn">
-											<button id="toggle-pass" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="right"
-													title="Click to show/hide your password">
-												<i class="fa fa-eye-slash"></i>
-											</button>
-										</span>
-									</div>
-								</div>
+						<div class="form-group">
+							<label class="control-label col-lg-4">Active</label>
+							<div class="col-lg-8">
+								<label class="radio-inline">
+									<input type="radio" name="active" value="true" {{ if .user.Active }}checked{{ end }}> Yes
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="active" value="false" {{ if not .user.Active }}checked{{ end }}> No
+								</label>
 							</div>
-							<!-- toggle show password input -->
 						</div>
+						{{ if .driver }}
+							<div class="text-center">
+								<a data-toggle="collapse" data-parent="#accordion"
+							   	href="#changePassword" class="text-primary">
+									Click to change password
+								</a>
+							</div>
+							<br/>
+							<div id="changePassword" class="panel-collapse collapse">
+								<!-- toggle show password input -->
+								<div class="form-group">
+									<label class="control-label col-lg-4">Password</label>
+									<div class="col-lg-8">
+										<div class="input-group">
+											<input type="password" id="toggle-pass" name="password" class="form-control"/>
+											<span class="input-group-btn">
+												<button id="toggle-pass" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="right"
+														title="Click to show/hide your password">
+														<i class="fa fa-eye-slash"></i>
+													</button>
+												</span>
+											</div>
+										</div>
+									</div>
+									<!-- toggle show password input -->
+								</div>
+						{{ end }}
 						<div class="col-lg-12">
 							<input type="hidden" name="id" value="{{ .driver.Id }}"/>
 							<input type="hidden" name="userId" value="{{ .driver.UserId }}"/>
+							<input type="hidden" name="companyId" value="{{ .company.Id }}"/>
 							<div class="form-group">
 								<button class="btn btn-primary btn-block">Save</button>
 							</div>
-							{{ if .driver }}
+                            {{ if .driver }}
 								<div class="form-group">
-									<a href="#" data-delete="/admin/driver/{{ .driver.Id }}" class="btn btn-danger btn-block delete-button" data-message="Are you sure you would like to permanently delete this driver?">Delete</a>
+									<a href="#" data-message="Are you sure you would like to delete this driver?" data-delete="/admin/company/{{ .company.Id }}/driver/{{ .driver.Id }}" class="btn btn-danger btn-block delete-button">Delete</a>
 								</div>
 							{{ end }}
 						</div>
@@ -128,7 +147,7 @@
 			</div>
 		</div>
 
-		<div class="col-lg-8">
+		<div class="col-lg-7">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					All Drivers

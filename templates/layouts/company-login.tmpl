@@ -1,3 +1,13 @@
+{{ define "head"}}
+	<style>
+		html, body {
+			margin:0;
+			padding:0;
+			height:100%;
+		}
+	</style>
+{{ end }}
+
 {{ define "title" }}{{ .company.Name }}'s Login{{ end }}
 {{  define "navbar" }}
 <nav class="navbar navbar-default" role="navigation">
@@ -29,7 +39,7 @@
 				{{ if .company.Logo }}
 					<a href="/{{ .company.Slug }}">
 						<div class="form-group text-center">
-							<img id="src-image" class="img-responsive col-lg-10 col-lg-offset-1" src="/static/logo/{{ .company.Slug }}.png"/>
+							<img id="src-image" class="img-responsive col-lg-10 col-lg-offset-1" src="/static/logo/{{ .company.Id }}.png"/>
 						</div>
 					</a>
 				{{ end }}

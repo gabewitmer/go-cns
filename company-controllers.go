@@ -111,9 +111,8 @@ func postCompanyRegister(w http.ResponseWriter, r *http.Request, c *web.Context)
 		http.Redirect(w, r, "/"+c.GetPathVar("slug")+"/register", 303)
 		return
 	}
-	documentId := util.UUID4()
 	document := service.Document{
-		Id:         documentId,
+		Id:         util.UUID4(),
 		DocumentId: "100",
 		CompanyId:  company.Id,
 		DriverId:   driver.Id,

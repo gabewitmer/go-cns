@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 
 	"github.com/cagnosolutions/web"
 	"github.com/cagnosolutions/web/tmpl"
@@ -204,8 +206,41 @@ func AdminUploadCompanyLogo(w http.ResponseWriter, r *http.Request, c *web.Conte
 	if !c.CheckAuth(w, r, "/login", "admin", "employee", "developer") {
 		return
 	}
-
-	http.Redirect(w, r, "/admin/company", 303)
+	path := "static/logo/"
+	if err := os.MkdirAll(path, 0755); err != nil {
+		c.SetFlash("alertError", "Error uploading file")
+		http.Redirect(w, r, "/admin/company/"+c.GetPathVar("id"), 303)
+		return
+	}
+	r.ParseMultipartForm(32 << 20) // 32 MB
+	file, handler, err := r.FormFile("logo")
+	if err != nil || len(handler.Header["Content-Type"]) < 1 {
+		fmt.Println(err)
+		c.SetFlash("alertError", "Error uploading file")
+		http.Redirect(w, r, "/admin/company/"+c.GetPathVar("id"), 303)
+		return
+	}
+	defer file.Close()
+	if handler.Header["Content-Type"][0] != "image/png" && handler.Header["Content-Type"][0] != "image/jpeg" {
+		fmt.Println(err)
+		c.SetFlash("alertError", "Error uploading file")
+		http.Redirect(w, r, "/admin/company/"+c.GetPathVar("id"), 303)
+		return
+	}
+	company := service.FindOneCompany(c.GetPathVar("id"))
+	f, err := os.OpenFile(path+company.Id+".png", os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println(err)
+		c.SetFlash("alertError", "Error uploading file")
+		http.Redirect(w, r, "/admin/company/"+company.Id, 303)
+		return
+	}
+	defer f.Close()
+	io.Copy(f, file)
+	company.Logo = true
+	service.SaveCompany(company)
+	c.SetFlash("alertSuccess", "Successfully uploaded file")
+	http.Redirect(w, r, "/admin/company/"+company.Id, 303)
 	return
 }
 
@@ -285,11 +320,13 @@ func AdminCompanyDriverGetOne(w http.ResponseWriter, r *http.Request, c *web.Con
 		return
 	}
 	msgK, msgV := c.GetFlash()
+	driver := service.FindOneDriver(c.GetPathVar("driverId"))
 	ts.Render(w, "admin-company-driver-form.tmpl", tmpl.Model{
 		msgK:      msgV,
 		"drivers": service.FindAllDriverByCompany(c.GetPathVar("companyId")),
-		"driver":  service.FindOneDriver(c.GetPathVar("driverId")),
+		"driver":  driver,
 		"company": service.FindOneCompany(c.GetPathVar("companyId")),
+		"user":    service.FindOneUser(driver.UserId),
 	})
 	return
 }
@@ -418,11 +455,13 @@ func AdminDriverGetOne(w http.ResponseWriter, r *http.Request, c *web.Context) {
 		return
 	}
 	msgK, msgV := c.GetFlash()
+	driver := service.FindOneDriver(c.GetPathVar("id"))
 	ts.Render(w, "admin-driver-form.tmpl", tmpl.Model{
 		msgK:        msgV,
-		"driver":    service.FindOneDriver(c.GetPathVar("id")),
+		"driver":    driver,
 		"drivers":   service.FindAllDriver(),
 		"companies": service.CompanyNames(),
+		"user":      service.FindOneUser(driver.UserId),
 	})
 	return
 }

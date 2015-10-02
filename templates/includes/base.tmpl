@@ -26,7 +26,7 @@
 					Under Active development
 				</span>
 				&nbsp;&nbsp;&nbsp;&nbsp;
-				Comments, notes or suggestions for this page. <a id="comment" href="/comment?return=">Click Here</a>
+				Comments, notes or suggestions for this page. <a id="comment" href="/comment?return=" style="color:blue;">Click Here</a>
 			</div>
 		{{ end }}
         {{ template "navbar" . }}
@@ -70,12 +70,14 @@
 			<script src="//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
 			<script src="/static/js/data-table-bootstrap.js"></script>
 			<script src="/static/js/main.js"></script>
-			<script type="text/javascript">
-				$(document).ready(function() {
-					href = $('#comment').attr('href') + window.location.pathname + '&name=' + document.title;
-					$('#comment').attr('href', href);
-				});
-			</script>
+			{{ if not .comment }}
+				<script type="text/javascript">
+					$(document).ready(function() {
+						href = $('#comment').attr('href') + window.location.pathname + '&name=' + document.title;
+						$('#comment').attr('href', href);
+					});
+				</script>
+			{{ end }}
 			{{ template "scripts" . }}
 		</div>
 	</body>
