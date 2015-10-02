@@ -1,0 +1,3 @@
+# go-cns
+
+Add readme
